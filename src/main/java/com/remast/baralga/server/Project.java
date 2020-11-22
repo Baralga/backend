@@ -13,7 +13,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table("project")
-public class ProjectRepresentation {
+public class Project {
 
     @Id
     @Column("project_id")

@@ -1,4 +1,4 @@
-package com.remast.baralga.server;
+package com.remast.baralga.server.rest;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

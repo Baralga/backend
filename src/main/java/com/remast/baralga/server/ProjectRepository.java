@@ -2,9 +2,9 @@ package com.remast.baralga.server;
 
 import org.springframework.data.repository.CrudRepository;
 
-public interface ProjectRepository extends CrudRepository<ProjectRepresentation, String> {
+public interface ProjectRepository extends CrudRepository<Project, String> {
 
-    Iterable<ProjectRepresentation> findByOrderByTitle();
+    Iterable<Project> findByOrderByTitle();
 
-    Iterable<ProjectRepresentation>  findByActiveOrderByTitle(Boolean active);
+    Iterable<Project>  findByActiveOrderByTitle(Boolean active);
 }

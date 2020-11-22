@@ -5,11 +5,11 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.Date;
 
-public interface ActivityRepository extends CrudRepository<ActivityRepresentation, String> {
+public interface ActivityRepository extends CrudRepository<Activity, String> {
 
-    Iterable<ActivityRepresentation> findByOrderByStart();
+    Iterable<Activity> findByOrderByStart();
 
     @Query("SELECT * FROM activity WHERE :start <= start and start < :end order by start desc")
-    Iterable<ActivityRepresentation> findByIntervalOrderByStart(Date start, Date end);
+    Iterable<Activity> findByIntervalOrderByStart(Date start, Date end);
 
 }
