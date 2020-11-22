@@ -11,6 +11,7 @@ ADD CONSTRAINT pk_project PRIMARY KEY (project_id);
 create table activity (
      activity_id  varchar(36) not null,
      description  varchar(4000),
+     user         varchar(36) not null,
      start        timestamp,
      end          timestamp,
      project_id   varchar(36) not null,
@@ -23,3 +24,6 @@ ADD CONSTRAINT pk_activity PRIMARY KEY (activity_id);
 ALTER TABLE activity
 ADD CONSTRAINT fk_activity_project
 FOREIGN KEY (project_id) REFERENCES project (project_id);
+
+CREATE INDEX activity_idx_user
+ON activity (user, start);

@@ -25,6 +25,9 @@ public class Activity {
     @Column("activity_id")
     private String id;
 
+    @Column("user")
+    private String user;
+
     @Column("description")
     private String description;
 

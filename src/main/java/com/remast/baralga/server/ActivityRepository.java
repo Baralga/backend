@@ -7,9 +7,9 @@ import java.util.Date;
 
 public interface ActivityRepository extends CrudRepository<Activity, String> {
 
-    Iterable<Activity> findByOrderByStart();
+    Iterable<Activity> findByUserOrderByStart(String user);
 
-    @Query("SELECT * FROM activity WHERE :start <= start and start < :end order by start desc")
-    Iterable<Activity> findByIntervalOrderByStart(Date start, Date end);
+    @Query("SELECT * FROM activity WHERE :user = user and :start <= start and start < :end order by start desc")
+    Iterable<Activity> findByUserAndIntervalOrderByStart(String user, Date start, Date end);
 
 }

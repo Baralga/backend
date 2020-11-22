@@ -1,6 +1,5 @@
 package com.remast.baralga.server.rest;
 
-import com.remast.baralga.server.Project;
 import com.remast.baralga.server.ProjectRepository;
 import com.remast.baralga.server.ProjectService;
 import lombok.NonNull;
@@ -9,8 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -27,12 +26,16 @@ public class ProjectRestController {
     private final @NonNull ProjectRepository projectRepository;
 
     @GetMapping(path = "/{id}")
-    public Optional<ProjectRepresentation> getById(@PathVariable String id) {
-        return projectRepository.findById(id).map(ProjectRepresentation::new);
+    public ResponseEntity<ProjectRepresentation> getById(@PathVariable String id) {
+        var project = projectRepository.findById(id);
+        if (project.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(new ProjectRepresentation(project.get()));
     }
 
     @GetMapping
-    public List<ProjectRepresentation> get(@RequestParam(required = false) Boolean active) {
+    public List<ProjectRepresentation> get(@RequestParam(required = false) Boolean active, Principal principal) {
         if (active != null) {
             StreamSupport.stream(projectRepository.findByActiveOrderByTitle(active).spliterator(), false)
                     .map(ProjectRepresentation::new)

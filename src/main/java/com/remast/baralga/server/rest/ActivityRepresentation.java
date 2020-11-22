@@ -43,6 +43,7 @@ public class ActivityRepresentation {
     public Activity map() {
         return new Activity(
                 id,
+                null,
                 description,
                 start,
                 end,

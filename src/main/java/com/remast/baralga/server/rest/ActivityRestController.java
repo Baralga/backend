@@ -1,17 +1,17 @@
 package com.remast.baralga.server.rest;
 
-import com.remast.baralga.server.*;
+import com.remast.baralga.server.ActivityRepository;
+import com.remast.baralga.server.ActivityService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.fromController;
@@ -24,8 +24,6 @@ public class ActivityRestController {
 
     private final @NonNull ActivityRepository activityRepository;
 
-    private final @NonNull ProjectRepository projectRepository;
-
     private final @NonNull ActivityService activityService;
 
     @GetMapping(path = "/{id}")
@@ -34,16 +32,16 @@ public class ActivityRestController {
     }
 
     @DeleteMapping(path = "/{id}")
-    public void delete(@PathVariable String id) {
+    public void delete(@PathVariable String id, Principal principal) {
         activityRepository.deleteById(id);
     }
 
     @GetMapping
-    public ActivitiesRepresentation get(@RequestParam(name = "start", required = false) String startParam, @RequestParam(name = "end", required = false) String endParam) {
+    public ActivitiesRepresentation get(@RequestParam(name = "start", required = false) String startParam, @RequestParam(name = "end", required = false) String endParam, Principal principal) {
         var start = startParam != null ? LocalDateTime.parse(startParam, DateTimeFormatter.ISO_DATE_TIME) : null;
         var end = endParam != null ? LocalDateTime.parse(endParam, DateTimeFormatter.ISO_DATE_TIME) : null;
 
-        var activities = activityService.read(start, end);
+        var activities = activityService.read(start, end, principal);
 
         return ActivitiesRepresentation.builder()
                 .data(activities.getFirst().stream().map(ActivityRepresentation::new).collect(Collectors.toList()))
@@ -52,8 +50,8 @@ public class ActivityRestController {
     }
 
     @PostMapping
-    public ResponseEntity<ActivityRepresentation> create(@RequestBody ActivityRepresentation activityRepresentation) {
-        var activity = activityService.create(activityRepresentation.map());
+    public ResponseEntity<ActivityRepresentation> create(@RequestBody ActivityRepresentation activityRepresentation, final Principal principal) {
+        var activity = activityService.create(activityRepresentation.map(), principal);
         var href = fromController(ActivityRestController.class)
                 .path("/{id}")
                 .buildAndExpand(activity.getId())
@@ -62,8 +60,7 @@ public class ActivityRestController {
     }
 
     @PutMapping(path = "/{id}")
-    public void update(@PathVariable String id, @RequestBody ActivityRepresentation activityRepresentation) {
-        activityRepresentation.setId(id);
-        activityRepository.save(activityRepresentation.map());
+    public void update(@PathVariable final String id, @RequestBody final ActivityRepresentation activityRepresentation, final Principal principal) {
+        activityService.update(activityRepresentation.map(), principal);
     }
 }
