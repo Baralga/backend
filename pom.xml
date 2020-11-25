@@ -87,6 +87,11 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<image>
+						<name>baralga.backend</name>
+					</image>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
