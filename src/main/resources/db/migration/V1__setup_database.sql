@@ -28,6 +28,9 @@ FOREIGN KEY (project_id) REFERENCES project (project_id);
 CREATE INDEX activity_idx_user
 ON activity (user, start);
 
+INSERT INTO project (project_id, title, description, active)
+    values ('f4b1087c-8fbb-4c8d-bbb7-ab4d46da16ea', 'My Project', null, true);
+
 CREATE TABLE users (
   username VARCHAR(50) NOT NULL,
   password VARCHAR(100) NOT NULL,
@@ -50,7 +53,7 @@ INSERT INTO users (username, password, enabled)
         1
 );
 INSERT INTO authorities (username, authority)
-  values ('admin', 'ADMIN');
+  values ('admin', 'ROLE_ADMIN');
 
 INSERT INTO users (username, password, enabled)
   values ('user1',
@@ -58,7 +61,7 @@ INSERT INTO users (username, password, enabled)
         1
 );
 INSERT INTO authorities (username, authority)
-  values ('user1', 'USER');
+  values ('user1', 'ROLE_USER');
 
 
 INSERT INTO users (username, password, enabled)
@@ -67,4 +70,4 @@ INSERT INTO users (username, password, enabled)
         1
 );
 INSERT INTO authorities (username, authority)
-  values ('user2', 'USER');
+  values ('user2', 'ROLE_USER');

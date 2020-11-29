@@ -9,7 +9,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -26,6 +25,7 @@ public class ProjectRestController {
 
     private final @NonNull ProjectRepository projectRepository;
 
+    @Transactional(readOnly = true)
     @GetMapping(path = "/{id}")
     public ResponseEntity<ProjectRepresentation> getById(@PathVariable String id) {
         var project = projectRepository.findById(id);
@@ -35,14 +35,15 @@ public class ProjectRestController {
         return ResponseEntity.ok(new ProjectRepresentation(project.get()));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping(path = "/{id}")
-    public void delete(@PathVariable String id, Principal principal) {
+    public void delete(@PathVariable String id) {
         projectRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
     @GetMapping
-    public List<ProjectRepresentation> get(@RequestParam(required = false) Boolean active, Principal principal) {
+    public List<ProjectRepresentation> get(@RequestParam(required = false) Boolean active) {
         if (active != null) {
             StreamSupport.stream(projectRepository.findByActiveOrderByTitle(active).spliterator(), false)
                     .map(ProjectRepresentation::new)
@@ -54,7 +55,7 @@ public class ProjectRestController {
                 .collect(Collectors.toList());
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<ProjectRepresentation> create(@RequestBody ProjectRepresentation projectRepresentation) {
         var project = projectService.create(projectRepresentation.map());

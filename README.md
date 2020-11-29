@@ -16,7 +16,7 @@ INSERT INTO users (username, password, enabled)
     1 -- enabled
 );
 INSERT INTO authorities (username, authority)
-  values ('user2', 'USER');
+  values ('user2', 'ROLE_USER');
 ```
 
 Passwords are encoded in BCrypt with BCrypt version `$2a` and strength 10. The tool https://8gwifi.org/bccrypt.jsp

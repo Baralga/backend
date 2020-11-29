@@ -26,6 +26,7 @@ public class ActivityRestController {
 
     private final @NonNull ActivityService activityService;
 
+    @Transactional(readOnly = true)
     @GetMapping(path = "/{id}")
     public Optional<ActivityRepresentation> getById(@PathVariable String id) {
         return activityRepository.findById(id).map(ActivityRepresentation::new);
@@ -36,6 +37,7 @@ public class ActivityRestController {
         activityRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
     @GetMapping
     public ActivitiesRepresentation get(@RequestParam(name = "start", required = false) String startParam, @RequestParam(name = "end", required = false) String endParam, Principal principal) {
         var start = startParam != null ? LocalDateTime.parse(startParam, DateTimeFormatter.ISO_DATE_TIME) : null;
