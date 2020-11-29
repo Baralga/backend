@@ -12,7 +12,7 @@ created using the following sql statements.
 INSERT INTO users (username, password, enabled)
   values (
     'user2',
-    '$2a$10$tHZDvbBK5.43Dw/rOnbg4e8.o1Js4/T7kb2tXJgM7I2ZhnsBECeAa', -- us3r2
+    '$2a$10$IhFsXJYqYG56/b1JgzZzv.kPcPsJnXeQzD9evMOUHg2LT/.Oz9uEu', -- us3r
     1 -- enabled
 );
 INSERT INTO authorities (username, authority)

@@ -5,6 +5,7 @@ import com.remast.baralga.server.ProjectService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,6 +35,12 @@ public class ProjectRestController {
         return ResponseEntity.ok(new ProjectRepresentation(project.get()));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping(path = "/{id}")
+    public void delete(@PathVariable String id, Principal principal) {
+        projectRepository.deleteById(id);
+    }
+
     @GetMapping
     public List<ProjectRepresentation> get(@RequestParam(required = false) Boolean active, Principal principal) {
         if (active != null) {
@@ -47,6 +54,7 @@ public class ProjectRestController {
                 .collect(Collectors.toList());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ProjectRepresentation> create(@RequestBody ProjectRepresentation projectRepresentation) {
         var project = projectService.create(projectRepresentation.map());
@@ -57,6 +65,7 @@ public class ProjectRestController {
         return ResponseEntity.created(href).body(new ProjectRepresentation(project));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(path = "/{id}")
     public void update(@PathVariable String id, @RequestBody ProjectRepresentation project) {
         project.setId(id);
