@@ -40,6 +40,21 @@ public class ActivityService {
         return activityRepository.save(activity);
     }
 
+    public Pair<List<Activity>, List<Project>> readAll(final LocalDateTime start, final LocalDateTime end) {
+        var activities = new ArrayList<Activity>();
+        if (start != null && end != null) {
+            Date startDate = convertToDateViaInstant(start);
+            Date endDate = convertToDateViaInstant(end);
+            activityRepository.findByIntervalOrderByStart(startDate, endDate)
+                    .forEach(activities::add);
+        } else {
+            activityRepository.findByOrderByStart()
+                    .forEach(activities::add);
+        }
+
+        return enrichtWithProjects(activities);
+    }
+
     public Pair<List<Activity>, List<Project>> read(final LocalDateTime start, final LocalDateTime end, final Principal principal) {
         var user = principal.getName();
         var activities = new ArrayList<Activity>();
@@ -53,7 +68,10 @@ public class ActivityService {
                     .forEach(activities::add);
         }
 
-        // read referenced projects
+        return enrichtWithProjects(activities);
+    }
+
+    private Pair<List<Activity>, List<Project>> enrichtWithProjects(List<Activity> activities) {
         var projects = new ArrayList<Project>();
         var projectsIterable = projectRepository.findAllById(
                 activities.stream()

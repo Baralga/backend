@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title layout:title-pattern="$CONTENT_TITLE __ $LAYOUT_TITLE">Baralga</title>
+
+    <link rel="stylesheet" href="/webjars/bulma/css/bulma.min.css">
+</head>
+<body>
+
+<!-- Main Navigation -->
+<nav class="navbar is-dark" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item" th:href="@{/}">
+            Baralga
+        </a>
+
+        <!--
+        <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        -->
+    </div>
+
+    <div id="navbarBasicExample" class="navbar-menu">
+        <div class="navbar-start">
+            <a th:href="@{/}" class="navbar-item">
+                Home
+            </a>
+            <a th:href="@{/projects}" class="navbar-item">
+                Projects
+            </a>
+        </div>
+
+        <div class="navbar-end">
+            <div class="navbar-item">
+                <div class="buttons">
+                    <a th:href="@{/logout}" class="button is-light">
+                        Log out
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Content Section -->
+<section class="section">
+    <div class="container" layout:fragment="content">
+        <h1 class="title">
+            Hello Baralga!
+        </h1>
+    </div>
+</section>
+
+<!-- Footer -->
+
+</body>
+</html>

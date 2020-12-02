@@ -1,7 +1,20 @@
-<h1>Projects!!</h1>
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Projects</title>
+</head>
+<body>
 
-<script>
-    fetch('/api/projects')
-  .then(response => response.json())
-  .then(data => console.log(data));
-</script>
+<div  class="columns is-multiline" layout:fragment="content">
+
+        Projects
+
+</div>
+
+
+
+
+</body>
+</html>
