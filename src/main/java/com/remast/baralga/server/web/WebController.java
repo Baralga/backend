@@ -1,5 +1,6 @@
 package com.remast.baralga.server.web;
 
+import com.remast.baralga.server.ActivityFilter;
 import com.remast.baralga.server.ActivityRepository;
 import com.remast.baralga.server.ActivityService;
 import com.remast.baralga.server.ProjectRepository;
@@ -9,12 +10,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -36,7 +34,16 @@ public class WebController {
 
     @GetMapping("/")
     public String showHome(Model model, HttpServletRequest request, Principal principal) {
-        var activities = request.isUserInRole("ROLE_ADMIN") ? activityService.readAll(null, null) : activityService.read(null, null, principal);
+        var activitiesFilter = ActivitiesFilterWeb.of(request);
+        if (!request.isUserInRole("ROLE_ADMIN")) {
+            activitiesFilter.setUser(principal.getName());
+        }
+
+        model.addAttribute("currentFilter", activitiesFilter);
+        model.addAttribute("previousFilter", activitiesFilter.previous());
+        model.addAttribute("nextFilter", activitiesFilter.next());
+
+        var activities = activityService.read(activitiesFilter.map());
         model.addAttribute("activities", activities.getFirst());
         model.addAttribute("projects", activities.getSecond().stream().collect(Collectors.toMap(p -> p.getId(), p -> p)));
         return "index";

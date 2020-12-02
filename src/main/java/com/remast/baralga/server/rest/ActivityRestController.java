@@ -1,5 +1,6 @@
 package com.remast.baralga.server.rest;
 
+import com.remast.baralga.server.ActivityFilter;
 import com.remast.baralga.server.ActivityRepository;
 import com.remast.baralga.server.ActivityService;
 import lombok.NonNull;
@@ -42,8 +43,13 @@ public class ActivityRestController {
     public ActivitiesRepresentation get(@RequestParam(name = "start", required = false) String startParam, @RequestParam(name = "end", required = false) String endParam, Principal principal) {
         var start = startParam != null ? LocalDateTime.parse(startParam, DateTimeFormatter.ISO_DATE_TIME) : null;
         var end = endParam != null ? LocalDateTime.parse(endParam, DateTimeFormatter.ISO_DATE_TIME) : null;
+        var activitiesFilter = ActivityFilter.builder()
+                .start(start)
+                .end(end)
+                .user(principal.getName())
+                .build();
 
-        var activities = activityService.read(start, end, principal);
+        var activities = activityService.read(activitiesFilter);
 
         return ActivitiesRepresentation.builder()
                 .data(activities.getFirst().stream().map(ActivityRepresentation::new).collect(Collectors.toList()))
