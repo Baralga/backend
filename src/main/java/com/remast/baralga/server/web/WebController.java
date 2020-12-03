@@ -1,15 +1,21 @@
 package com.remast.baralga.server.web;
 
-import com.remast.baralga.server.ActivityFilter;
 import com.remast.baralga.server.ActivityRepository;
 import com.remast.baralga.server.ActivityService;
 import com.remast.baralga.server.ProjectRepository;
+import com.remast.baralga.server.ProjectService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import javax.validation.Valid;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
@@ -26,10 +32,23 @@ public class WebController {
 
     private final @NonNull ProjectRepository projectRepository;
 
+    private final @NonNull ProjectService projectService;
+
     @GetMapping("/projects")
     public String showProjects(Model model) {
+        model.addAttribute("project", new ProjectModel());
         model.addAttribute("projects", projectRepository.findByOrderByTitle());
         return "projects";
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping("/projects")
+    public String createProject(@Valid ProjectModel project, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "redirect:/projects";
+        }
+        projectService.create(project.map());
+        return "redirect:/projects";
     }
 
     @GetMapping("/")

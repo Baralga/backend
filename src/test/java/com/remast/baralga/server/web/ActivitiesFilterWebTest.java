@@ -14,6 +14,8 @@ class ActivitiesFilterWebTest {
 
         // Assert
         assertThat(activitiesFilter.getInterval()).isEqualTo(ActivitiesFilterWeb.IntervalType.YEAR);
+        assertThat(activitiesFilter.getStart()).isNotNull();
+        assertThat(activitiesFilter.getEnd()).isNotNull();
     }
 
 }

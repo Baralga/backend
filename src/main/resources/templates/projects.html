@@ -12,7 +12,7 @@
     <h1 class="title is-1">Projects</h1>
 
     <div class="columns is-multiline">
-        <div class="column is-12" sec:authorize="hasRole('ADMIN')">
+        <form th:action="@{/projects}" th:object="${project}" method="POST" class="column is-12" sec:authorize="hasRole('ADMIN')">
 
             <div class="field">
                 <label class="label">Name</label>
@@ -21,36 +21,37 @@
                     <div class="control">
                         <input
                                 class="input"
+                                required="required"
                                 minlength="3"
-                                maxlength="200"
-                                type="text"
-                                bind:value={name} />
+                                maxlength="30"
+                                th:field="*{title}"
+                                type="text" />
                     </div>
                     <div class="control">
                         <button
                                 class="button is-success"
-                                disabled={!isValidName}
-                                on:click={add}>
-                <span class="icon is-medium">
-                    <i class="fa fa-plus"></i>
-                </span>
+                                type="submit">
+                                <span class="icon is-medium">
+                                    <i class="fa fa-plus"></i>
+                                </span>
                         </button>
                     </div>
                 </div>
             </div>
 
-        </div>
+        </form>
 
         <div class=" column is-12"  th:each="project: ${projects}">
             <div class="card" th:title=${project.title}>
                 <header class="card-header">
                     <p class="card-header-title" th:text="${project.title}"></p>
-
+                    <!--
                     <a th:href="@{/projects/{projectId}/delete(projectId=${project.id})}" sec:authorize="hasRole('ADMIN')" class="card-header-icon">
                         <span class="icon">
                           <i class="fas fa-trash" aria-hidden="true"></i>
                         </span>
                     </a>
+                    -->
                 </header>
 
             </div>

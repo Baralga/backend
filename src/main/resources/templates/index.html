@@ -62,11 +62,13 @@
         <div class="card" th:title="${activity.description}">
             <header class="card-header">
                 <p class="card-header-title" th:text="${#temporals.format(activity.start, 'dd/MM/yyyy')}"></p>
+                <!--
                 <a th:href="@{/activities/{activityId}/edit(activityId=${activity.id})}" class="card-header-icon">
                       <span class="icon">
                           <i class="fas fa-edit" aria-hidden="true"></i>
                       </span>
                 </a>
+                -->
             </header>
             <div class="card-content">
                 <div class="content">
