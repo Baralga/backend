@@ -15,7 +15,18 @@ The backend is configured using the following environment variables:
 | `BARALGA_DS_PASSWORD` | `mysql`      |    database password |
 | `SERVER_PORT` | `8080`      |    http server port |
 
-### User Administration
+### Users and Roles
+
+Baralga supports the following roles:
+
+| Role  | DB Name | Description                        |
+| ----- |:------- |:------------------------------------|
+| User  | `ROLE_USER` |Full access to his own activities but can only read projects. |
+| Admin | `ROLE_ADMIN`  | Full access to activities of all users and projects.          |
+
+
+#### Administration
+
 Users are stored in the database in the table `users` and the user role in the table `authorities`.  Users can be 
 created using the following sql statements.
 
