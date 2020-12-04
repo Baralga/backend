@@ -1,16 +1,18 @@
 package com.remast.baralga.server;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class End2EndWebITTest extends AbstractEnd2EndTest {
@@ -22,9 +24,22 @@ public class End2EndWebITTest extends AbstractEnd2EndTest {
         // Act
         var response = executeWebRequest(GET, "/projects");
 
-        // Asset
+        // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
+    }
+
+    @Test
+    public void createProject() {
+        // Arrange
+        var projectForm = new LinkedMultiValueMap<String, String>();
+        projectForm.add("title", "Yet Another Project");
+
+        // Act
+        var response = executeWebRequest(POST, "/projects", projectForm);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
     }
 
     @Test
@@ -34,7 +49,7 @@ public class End2EndWebITTest extends AbstractEnd2EndTest {
         // Act
         var response = executeWebRequest(GET, "/");
 
-        // Asset
+        // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
     }
@@ -43,7 +58,7 @@ public class End2EndWebITTest extends AbstractEnd2EndTest {
         return executeWebRequest(method, path, null);
     }
 
-    private ResponseEntity<String> executeWebRequest(HttpMethod method, String path, Map<String, String> formData) {
+    private ResponseEntity<String> executeWebRequest(HttpMethod method, String path, LinkedMultiValueMap<String, String> formData) {
         if (method == GET) {
             return restTemplateWithValidAuth().exchange(urlWith(path),
                     method,
@@ -51,10 +66,15 @@ public class End2EndWebITTest extends AbstractEnd2EndTest {
                     String.class);
         }
 
-        return restTemplateWithValidAuth().postForEntity(urlWith(path),
-                method,
-                null,
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        return restTemplateWithValidAuth().postForEntity(
+                urlWith(path),
+                formData,
                 String.class);
+
+
     }
 
 }

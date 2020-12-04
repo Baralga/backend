@@ -47,7 +47,7 @@ public class End2EndRestITTest extends AbstractEnd2EndTest {
         // Act
         var response = executeRequest(GET, "/api/projects");
 
-        // Asset
+        // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().size()).isEqualTo(1);
 
@@ -62,7 +62,7 @@ public class End2EndRestITTest extends AbstractEnd2EndTest {
         // Act
         var response = executeRequest(GET, "/api/projects?active=true");
 
-        // Asset
+        // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().size()).isEqualTo(1);
 
@@ -82,7 +82,7 @@ public class End2EndRestITTest extends AbstractEnd2EndTest {
         // Act
         var response = executeRequest(POST, "/api/projects", projectJson);
 
-        // Asset
+        // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody().get("id")).isNotNull();
         assertThat(response.getBody().get("title").textValue()).isEqualTo("Yet Another Project");
@@ -98,7 +98,7 @@ public class End2EndRestITTest extends AbstractEnd2EndTest {
         // Act
         var response = executeRequest(DELETE, "/api/projects/" + projectId);
 
-        // Asset
+        // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         var responseProjectsAfter = executeRequest(GET, "/api/projects");
         var countProjectsAfter = responseProjectsAfter.getBody().size();
@@ -134,7 +134,7 @@ public class End2EndRestITTest extends AbstractEnd2EndTest {
         // Act
         var response = executeRequest(POST, "/api/activities", activityJson);
 
-        // Asset
+        // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody().get("id")).isNotNull();
         assertThat(response.getBody().get("description").textValue()).isEqualTo("My Activity");
@@ -150,7 +150,7 @@ public class End2EndRestITTest extends AbstractEnd2EndTest {
         // Act
         var response = executeRequest(GET, "/api/activities");
 
-        // Asset
+        // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().get("data").size()).isEqualTo(0);
         assertThat(response.getBody().get("projectRefs").size()).isEqualTo(0);
@@ -166,7 +166,7 @@ public class End2EndRestITTest extends AbstractEnd2EndTest {
         // Act
         var response = executeRequest(DELETE, "/api/activities/" + activityId);
 
-        // Asset
+        // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         var responseActivitiesAfter = executeRequest(GET, "/api/activities");
         var countActivitiesAfter = responseActivitiesAfter.getBody().get("data").size();
