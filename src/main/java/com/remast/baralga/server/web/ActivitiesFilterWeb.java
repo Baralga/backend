@@ -121,5 +121,17 @@ public class ActivitiesFilterWeb {
         YEAR
     }
 
+    public String toString() {
+        switch (interval) {
+            case DAY:
+                return DateTimeFormatter.ofPattern("dd/MM/yyyy").format(start);
+            case MONTH:
+                return DateTimeFormatter.ofPattern("LLLLLLLL").format(start);
+            case YEAR:
+                return DateTimeFormatter.ofPattern("YYYY").format(start);
+        }
+        throw new IllegalStateException("Interval " + interval + " not supported.");
+    }
+
 
 }

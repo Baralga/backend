@@ -76,6 +76,22 @@ public class End2EndITTest {
     }
 
     @Test
+    public void readActiveProjects() {
+        // Arrange
+
+        // Act
+        var response = executeRequest(GET, "/api/projects?active=true");
+
+        // Asset
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody().size()).isEqualTo(1);
+
+        var project = response.getBody().get(0);
+        assertThat(project.get("title").textValue()).isEqualTo("My Project");
+        assertThat(project.get("active").booleanValue()).isTrue();
+    }
+
+    @Test
     public void createProject() throws IndexOutOfBoundsException {
         // Arrange
         var projectJson = objectMapper.createObjectNode();
