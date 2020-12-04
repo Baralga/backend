@@ -49,7 +49,7 @@ public class End2EndRestITTest extends AbstractEnd2EndTest {
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().size()).isGreaterThan(1);
+        assertThat(response.getBody().size()).isGreaterThanOrEqualTo(1);
 
         var project = response.getBody().get(0);
         assertThat(project.get("title").textValue()).isEqualTo("My Project");
@@ -64,7 +64,7 @@ public class End2EndRestITTest extends AbstractEnd2EndTest {
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().size()).isGreaterThan(1);
+        assertThat(response.getBody().size()).isGreaterThanOrEqualTo(1);
 
         var project = response.getBody().get(0);
         assertThat(project.get("active").booleanValue()).isTrue();
