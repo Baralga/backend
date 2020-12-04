@@ -3,7 +3,6 @@ package com.remast.baralga.server.web;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
