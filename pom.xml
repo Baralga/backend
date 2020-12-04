@@ -110,6 +110,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>baralga-backend-${project.version}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
