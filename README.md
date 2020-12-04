@@ -32,6 +32,26 @@ INSERT INTO authorities (username, authority)
 
 Passwords are encoded in BCrypt with BCrypt version `$2a` and strength 10. The tool https://8gwifi.org/bccrypt.jsp
 can be used to create a hashed password to be used in sql.
+
+### Supported Databases
+
+Supported databases are:
+* [MySQL](https://www.mysql.com/)
+* [PostgreSQL](https://www.postgresql.org/)
+
+#### MySQL Configuration
+```
+BARALGA_DS_URL=jdbc:mysql://localhost:3306/baralga
+BARALGA_DS_USER=root
+BARALGA_DS_PASSWORD=mysql
+```
+
+#### PostgreSQL Configuration
+```bash
+BARALGA_DS_URL=jdbc:postgresql://localhost:5432/baralga
+BARALGA_DS_USER=postgres
+BARALGA_DS_PASSWORD=postgres
+```
                          
 ### Health Check
 

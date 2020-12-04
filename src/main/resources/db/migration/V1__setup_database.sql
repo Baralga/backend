@@ -11,9 +11,9 @@ ADD CONSTRAINT pk_project PRIMARY KEY (project_id);
 create table activity (
      activity_id  varchar(36) not null,
      description  varchar(4000),
-     user         varchar(36) not null,
-     start        timestamp,
-     end          timestamp,
+     username     varchar(36) not null,
+     start_time   timestamp,
+     end_time     timestamp,
      project_id   varchar(36) not null,
      FOREIGN key (project_id) REFERENCES project(project_id)
 );
@@ -26,7 +26,7 @@ ADD CONSTRAINT fk_activity_project
 FOREIGN KEY (project_id) REFERENCES project (project_id);
 
 CREATE INDEX activity_idx_user
-ON activity (user, start);
+ON activity (username, start_time);
 
 INSERT INTO project (project_id, title, description, active)
     values ('f4b1087c-8fbb-4c8d-bbb7-ab4d46da16ea', 'My Project', null, true);
@@ -34,7 +34,7 @@ INSERT INTO project (project_id, title, description, active)
 CREATE TABLE users (
   username VARCHAR(50) NOT NULL,
   password VARCHAR(100) NOT NULL,
-  enabled TINYINT NOT NULL DEFAULT 1,
+  enabled INTEGER NOT NULL DEFAULT 1,
   PRIMARY KEY (username)
 );
 

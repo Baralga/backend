@@ -25,7 +25,7 @@ public class Activity {
     @Column("activity_id")
     private String id;
 
-    @Column("user")
+    @Column("username")
     private String user;
 
     @Column("description")
@@ -33,12 +33,12 @@ public class Activity {
 
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @Column("start")
+    @Column("start_time")
     private LocalDateTime start;
 
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @Column("end")
+    @Column("end_time")
     private LocalDateTime end;
 
     @Column("project_id")
