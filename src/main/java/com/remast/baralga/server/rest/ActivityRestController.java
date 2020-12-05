@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,6 +22,8 @@ import static org.springframework.web.servlet.mvc.method.annotation.MvcUriCompon
 @RequestMapping(value = "/api/activities")
 @RequiredArgsConstructor
 public class ActivityRestController {
+
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     private final @NonNull ActivityRepository activityRepository;
 
@@ -41,8 +43,8 @@ public class ActivityRestController {
     @Transactional(readOnly = true)
     @GetMapping
     public ActivitiesRepresentation get(@RequestParam(name = "start", required = false) String startParam, @RequestParam(name = "end", required = false) String endParam, Principal principal) {
-        var start = startParam != null ? LocalDateTime.parse(startParam, DateTimeFormatter.ISO_DATE_TIME) : null;
-        var end = endParam != null ? LocalDateTime.parse(endParam, DateTimeFormatter.ISO_DATE_TIME) : null;
+        var start = startParam != null ? LocalDate.parse(startParam, DATE_FORMAT).atStartOfDay() : null;
+        var end = endParam != null ? LocalDate.parse(endParam, DATE_FORMAT).atStartOfDay() : null;
         var activitiesFilter = ActivityFilter.builder()
                 .start(start)
                 .end(end)

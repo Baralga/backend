@@ -156,6 +156,19 @@ class End2EndRestITTest extends AbstractEnd2EndTest {
     }
 
     @Test
+    void readActivitiesWithFilter() {
+        // Arrange
+
+        // Act
+        var response = executeRequest(GET, "/api/activities?start=2020-01-01&end=2020-01-10");
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody().get("data").size()).isZero();
+        assertThat(response.getBody().get("projectRefs").size()).isZero();
+    }
+
+    @Test
     void readActivityById() {
         // Arrange
         var activityId = arrangeActivity(INITIAL_PROJECT_ID);
