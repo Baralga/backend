@@ -156,6 +156,19 @@ class End2EndRestITTest extends AbstractEnd2EndTest {
     }
 
     @Test
+    void readActivityById() {
+        // Arrange
+        var activityId = arrangeActivity(INITIAL_PROJECT_ID);
+
+        // Act
+        var response = executeRequest(GET, "/api/activities/" + activityId);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody().get("id").asText()).isEqualTo(activityId);
+    }
+
+    @Test
     void deleteActivity() {
         // Arrange
         var activityId = arrangeActivity(INITIAL_PROJECT_ID);
