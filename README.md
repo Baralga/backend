@@ -68,4 +68,4 @@ BARALGA_DS_PASSWORD=postgres
                          
 ### Health Check
 
-A health check is available at `http://localhost/actuator/health`.
+A health check is available at `http://localhost:8080/actuator/health`.
