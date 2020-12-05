@@ -21,7 +21,7 @@ class ActivitiesFilterWebTest {
         assertThat(activitiesFilter.getStart().getYear()).isEqualTo(LocalDateTime.now().getYear());
         assertThat(activitiesFilter.getEnd()).isNotNull();
         assertThat(activitiesFilter.getEnd().getYear()).isEqualTo(LocalDateTime.now().getYear() + 1);
-        assertThat(activitiesFilter.toString()).isEqualTo(String.valueOf(LocalDateTime.now().getYear()));
+        assertThat(activitiesFilter).hasToString(String.valueOf(LocalDateTime.now().getYear()));
     }
 
     @Test

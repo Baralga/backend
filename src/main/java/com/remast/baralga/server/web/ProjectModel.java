@@ -21,6 +21,7 @@ public class ProjectModel {
     @Size(min = 3, max = 30)
     private String title;
 
+    @Size(max = 500)
     private String description;
 
     private Boolean active;

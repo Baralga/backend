@@ -138,8 +138,8 @@ class End2EndRestITTest extends AbstractEnd2EndTest {
         assertThat(response.getBody().get("id")).isNotNull();
         assertThat(response.getBody().get("description").textValue()).isEqualTo("My Activity");
         var responseActivities = executeRequest(GET, "/api/activities");
-        assertThat(responseActivities.getBody().get("data").size()).isGreaterThan(0);
-        assertThat(responseActivities.getBody().get("projectRefs").size()).isGreaterThan(0);
+        assertThat(responseActivities.getBody().get("data").size()).isPositive();
+        assertThat(responseActivities.getBody().get("projectRefs").size()).isPositive();
     }
 
     @Test
