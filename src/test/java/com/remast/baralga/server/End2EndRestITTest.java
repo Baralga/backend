@@ -12,10 +12,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.*;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class End2EndRestITTest extends AbstractEnd2EndTest {
+class End2EndRestITTest extends AbstractEnd2EndTest {
 
     @Test
-    public void healthCheck() {
+    void healthCheck() {
         // Act
         var responseBody = this.restTemplate.getForObject(urlWith("/actuator/health"), String.class);
 
@@ -24,7 +24,7 @@ public class End2EndRestITTest extends AbstractEnd2EndTest {
     }
 
     @Test
-    public void readProjectsWithInvalidCredentials() {
+    void readProjectsWithInvalidCredentials() {
         // Arrange
         var headers = new LinkedMultiValueMap<>();
         headers.add("Content-Type", "application/json");
@@ -41,7 +41,7 @@ public class End2EndRestITTest extends AbstractEnd2EndTest {
     }
 
     @Test
-    public void readProjects() {
+    void readProjects() {
         // Arrange
 
         // Act
@@ -49,14 +49,14 @@ public class End2EndRestITTest extends AbstractEnd2EndTest {
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().size()).isGreaterThanOrEqualTo(1);
+        assertThat(response.getBody().size()).isPositive();
 
         var project = response.getBody().get(0);
         assertThat(project.get("title").textValue()).isEqualTo("My Project");
     }
 
     @Test
-    public void readActiveProjects() {
+    void readActiveProjects() {
         // Arrange
 
         // Act
@@ -64,14 +64,14 @@ public class End2EndRestITTest extends AbstractEnd2EndTest {
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().size()).isGreaterThanOrEqualTo(1);
+        assertThat(response.getBody().size()).isPositive();
 
         var project = response.getBody().get(0);
         assertThat(project.get("active").booleanValue()).isTrue();
     }
 
     @Test
-    public void createProject() {
+    void createProject() {
         // Arrange
         var projectJson = objectMapper.createObjectNode();
         projectJson.put("title", "Yet Another Project");
@@ -88,7 +88,7 @@ public class End2EndRestITTest extends AbstractEnd2EndTest {
     }
 
     @Test
-    public void deleteProject() {
+    void deleteProject() {
         // Arrange
         var projectId = arrangeProject();
         var responseProjectsBefore = executeRequest(GET, "/api/projects");
@@ -105,7 +105,7 @@ public class End2EndRestITTest extends AbstractEnd2EndTest {
     }
 
     @Test
-    public void deleteProjectForbiddenForUserRole() {
+    void deleteProjectForbiddenForUserRole() {
         // Arrange
         var headers = new LinkedMultiValueMap<>();
         headers.add("Content-Type", "application/json");
@@ -122,7 +122,7 @@ public class End2EndRestITTest extends AbstractEnd2EndTest {
     }
 
     @Test
-    public void createActivity() {
+    void createActivity() {
         // Arrange
         var activityJson = objectMapper.createObjectNode();
         activityJson.put("projectRef", INITIAL_PROJECT_ID);
@@ -143,7 +143,7 @@ public class End2EndRestITTest extends AbstractEnd2EndTest {
     }
 
     @Test
-    public void readActivities() {
+    void readActivities() {
         // Arrange
 
         // Act
@@ -151,12 +151,12 @@ public class End2EndRestITTest extends AbstractEnd2EndTest {
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().get("data").size()).isEqualTo(0);
-        assertThat(response.getBody().get("projectRefs").size()).isEqualTo(0);
+        assertThat(response.getBody().get("data").size()).isZero();
+        assertThat(response.getBody().get("projectRefs").size()).isZero();
     }
 
     @Test
-    public void deleteActivity() {
+    void deleteActivity() {
         // Arrange
         var activityId = arrangeActivity(INITIAL_PROJECT_ID);
         var responseActivitiesBefore = executeRequest(GET, "/api/activities");

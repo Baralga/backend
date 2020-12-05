@@ -1,9 +1,6 @@
 package com.remast.baralga.server.web;
 
-import com.remast.baralga.server.ActivityRepository;
-import com.remast.baralga.server.ActivityService;
-import com.remast.baralga.server.ProjectRepository;
-import com.remast.baralga.server.ProjectService;
+import com.remast.baralga.server.*;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -11,9 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import javax.validation.Valid;
 
@@ -25,8 +20,6 @@ import java.util.stream.Collectors;
 @Controller
 @RequiredArgsConstructor
 public class WebController {
-
-    private final @NonNull ActivityRepository activityRepository;
 
     private final @NonNull ActivityService activityService;
 
@@ -64,7 +57,8 @@ public class WebController {
 
         var activities = activityService.read(activitiesFilter.map());
         model.addAttribute("activities", activities.getFirst());
-        model.addAttribute("projects", activities.getSecond().stream().collect(Collectors.toMap(p -> p.getId(), p -> p)));
+        model.addAttribute("projects", activities.getSecond().stream()
+                .collect(Collectors.toMap(Project::getId, p -> p)));
         return "index";
     }
 }

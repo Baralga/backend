@@ -100,7 +100,7 @@ public class ActivitiesFilterWeb {
             case YEAR:
                 return date.minusYears(1);
         }
-        throw new IllegalStateException("Interval " + interval + " not supported.");
+        throw new IllegalStateException("Interval " + interval + " not supported."); // NOSONAR
     }
 
     private LocalDateTime next(LocalDateTime date) {
@@ -112,7 +112,7 @@ public class ActivitiesFilterWeb {
             case YEAR:
                 return date.plusYears(1);
         }
-        throw new IllegalStateException("Interval " + interval + " not supported.");
+        throw new IllegalStateException("Interval " + interval + " not supported."); // NOSONAR
     }
 
     public enum IntervalType {
@@ -130,7 +130,7 @@ public class ActivitiesFilterWeb {
             case YEAR:
                 return DateTimeFormatter.ofPattern("YYYY").format(start);
         }
-        throw new IllegalStateException("Interval " + interval + " not supported.");
+        throw new IllegalStateException("Interval " + interval + " not supported."); // NOSONAR
     }
 
 

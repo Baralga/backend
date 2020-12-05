@@ -1,24 +1,20 @@
 package com.remast.baralga.server;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class End2EndWebITTest extends AbstractEnd2EndTest {
+class End2EndWebITTest extends AbstractEnd2EndTest {
 
     @Test
-    public void readProjects() {
+    void readProjects() {
         // Arrange
 
         // Act
@@ -30,7 +26,7 @@ public class End2EndWebITTest extends AbstractEnd2EndTest {
     }
 
     @Test
-    public void createProject() {
+    void createProject() {
         // Arrange
         var projectForm = new LinkedMultiValueMap<String, String>();
         projectForm.add("title", "Yet Another Project");
@@ -43,7 +39,7 @@ public class End2EndWebITTest extends AbstractEnd2EndTest {
     }
 
     @Test
-    public void readActivities() {
+    void readActivities() {
         // Arrange
 
         // Act
@@ -66,15 +62,13 @@ public class End2EndWebITTest extends AbstractEnd2EndTest {
                     String.class);
         }
 
-        HttpHeaders headers = new HttpHeaders();
+        var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         return restTemplateWithValidAuth().postForEntity(
                 urlWith(path),
                 formData,
                 String.class);
-
-
     }
 
 }
