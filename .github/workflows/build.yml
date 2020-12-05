@@ -1,5 +1,7 @@
 name: Build
 on: [push]
+env:
+  IMAGE_NAME: baralga-backend
 jobs:
   build:
     runs-on: ubuntu-18.04
