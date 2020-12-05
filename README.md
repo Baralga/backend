@@ -1,3 +1,5 @@
+[![Github Actions Status for Baralga/baralga](https://github.com/baralga/backend/workflows/Build/badge.svg)](https://github.com/Baralga/baralga/actions) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=baralga-backend&metric=alert_status)](https://sonarcloud.io/dashboard?id=baralga-backend)
+
 # Baralga Backend
 
 Backend for multi user usage of the Baralga time tracking application.
