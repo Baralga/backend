@@ -4,15 +4,13 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
 import org.springframework.data.util.Pair;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,11 +31,28 @@ public class ActivityService {
         return activity;
     }
 
-    public Activity update(final Activity activity, final Principal principal) {
-        // TODO: Check ownership
-        var user = principal.getName();
-        activity.setUser(user);
-        return activityRepository.save(activity);
+    public Optional<Activity> update(final Activity activity, final Principal principal, boolean isAdmin) {
+        var currentActivity = activityRepository.findById(activity.getId());
+        if (currentActivity.isEmpty()) {
+            return Optional.empty();
+        }
+
+        if (!isAdmin || !currentActivity.get().getUser().equals(principal.getName())) {
+            throw new AccessDeniedException("No access to activity.");
+        }
+        return Optional.of(activityRepository.save(activity));
+    }
+
+    public void deleteById(final String id, final Principal principal, boolean isAdmin) {
+        var currentActivity = activityRepository.findById(id);
+        if (currentActivity.isEmpty()) {
+            return;
+        }
+
+        if (!isAdmin || !currentActivity.get().getUser().equals(principal.getName())) {
+            throw new AccessDeniedException("No access to activity.");
+        }
+        activityRepository.deleteById(id);
     }
 
     public Pair<List<Activity>, List<Project>> read(final ActivityFilter activityFilter) {
@@ -55,8 +70,8 @@ public class ActivityService {
             }
         } else {
             if (activityFilter.getUser() != null) {
-            activityRepository.findByUserOrderByStart(activityFilter.getUser())
-                    .forEach(activities::add);
+                activityRepository.findByUserOrderByStart(activityFilter.getUser())
+                        .forEach(activities::add);
             } else {
                 activityRepository.findByOrderByStart()
                         .forEach(activities::add);

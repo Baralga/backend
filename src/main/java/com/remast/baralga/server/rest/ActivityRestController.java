@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -36,8 +37,8 @@ public class ActivityRestController {
     }
 
     @DeleteMapping(path = "/{id}")
-    public void delete(@PathVariable String id, Principal principal) {
-        activityRepository.deleteById(id);
+    public void delete(@PathVariable String id, HttpServletRequest request, Principal principal) {
+        activityService.deleteById(id, principal, request.isUserInRole("ROLE_ADMIN"));
     }
 
     @Transactional(readOnly = true)
@@ -60,7 +61,7 @@ public class ActivityRestController {
     }
 
     @PostMapping
-    public ResponseEntity<ActivityRepresentation> create(@RequestBody ActivityRepresentation activityRepresentation, final Principal principal) {
+    public ResponseEntity<ActivityRepresentation> create(@RequestBody ActivityRepresentation activityRepresentation, Principal principal) {
         var activity = activityService.create(activityRepresentation.map(), principal);
         var href = fromController(ActivityRestController.class)
                 .path("/{id}")
@@ -70,7 +71,11 @@ public class ActivityRestController {
     }
 
     @PutMapping(path = "/{id}")
-    public void update(@PathVariable final String id, @RequestBody final ActivityRepresentation activityRepresentation, final Principal principal) {
-        activityService.update(activityRepresentation.map(), principal);
+    public ResponseEntity<ActivityRepresentation> update(@PathVariable final String id, @RequestBody ActivityRepresentation activityRepresentation, HttpServletRequest request, Principal principal) {
+        var updatedActivity  = activityService.update(activityRepresentation.map(), principal, request.isUserInRole("ROLE_ADMIN"));
+        if (updatedActivity.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok().body(new ActivityRepresentation(updatedActivity.get()));
     }
 }

@@ -198,4 +198,19 @@ class End2EndRestITTest extends AbstractEnd2EndTest {
         assertThat(countActivitiesAfter).isEqualTo(countActivitiesBefore - 1);
     }
 
+    @Test
+    void deleteActivityAsOtherUserDenied() {
+        // Arrange
+        var activityId = arrangeActivity(INITIAL_PROJECT_ID);
+
+        // Act
+        var response = restTemplateWithUserAuth().exchange(urlWith("/api/activities/" + activityId),
+                DELETE,
+                null,
+                JsonNode.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
 }
