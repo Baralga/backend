@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -40,6 +41,10 @@ public class ProjectRestController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<ProjectRepresentation> delete(@PathVariable String id) {
+        var project = projectRepository.findById(id);
+        if (project.isEmpty()) {
+            return ResponseEntity.ok().build();
+        }
         projectRepository.deleteById(id);
         return ResponseEntity.ok().build();
     }
@@ -73,6 +78,10 @@ public class ProjectRestController {
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping(path = "/{id}")
     public ResponseEntity<ProjectRepresentation> update(@PathVariable String id, @RequestBody ProjectRepresentation project, HttpServletRequest request) {
+        var currentActivity = projectRepository.findById(id);
+        if (currentActivity.isEmpty()) {
+            return  ResponseEntity.notFound().build();
+        }
         project.setId(id);
         return ResponseEntity.ok().body(new ProjectRepresentation(projectRepository.save(project.map()), request.isUserInRole("ROLE_ADMIN")));
     }

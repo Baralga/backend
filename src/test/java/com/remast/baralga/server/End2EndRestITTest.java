@@ -142,6 +142,32 @@ class End2EndRestITTest extends AbstractEnd2EndTest {
     }
 
     @Test
+    void updateNonExistingProject() {
+        // Arrange
+        var projectId = "UNKOWN";
+        var projectJson = objectMapper.createObjectNode();
+        projectJson.put("id", projectId);
+
+        // Act
+        var response = executeRequest(PATCH, "/api/projects/" + projectId, projectJson);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void deleteNonExistingProject() {
+        // Arrange
+        var projectId = "UNKOWN";
+
+        // Act
+        var response = executeRequest(DELETE, "/api/projects/" + projectId);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
     void deleteProjectForbiddenForUserRole() {
         // Arrange
         var headers = new LinkedMultiValueMap<>();
@@ -216,6 +242,32 @@ class End2EndRestITTest extends AbstractEnd2EndTest {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().get("id").asText()).isEqualTo(activityId);
+    }
+
+    @Test
+    void updateNonExistingActivity() {
+        // Arrange
+        var activityId = "UNKOWN";
+        var activityJson = objectMapper.createObjectNode();
+        activityJson.put("id", activityId);
+
+        // Act
+        var response = executeRequest(PATCH, "/api/activities/" + activityId, activityJson);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void deleteNonExistingActivity() {
+        // Arrange
+        var activityId = "UNKOWN";
+
+        // Act
+        var response = executeRequest(DELETE, "/api/activities/" + activityId);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
