@@ -37,19 +37,22 @@ public class ActivityService {
             return Optional.empty();
         }
 
-        if (!isAdmin || !currentActivity.get().getUser().equals(principal.getName())) {
+        if (!isAdmin && !currentActivity.get().getUser().equals(principal.getName())) {
             throw new AccessDeniedException("No access to activity.");
         }
+
+        activity.setUser(currentActivity.get().getUser());
+
         return Optional.of(activityRepository.save(activity));
     }
 
     public void deleteById(final String id, final Principal principal, boolean isAdmin) {
-        var currentActivity = activityRepository.findById(id);
+            var currentActivity = activityRepository.findById(id);
         if (currentActivity.isEmpty()) {
             return;
         }
 
-        if (!isAdmin || !currentActivity.get().getUser().equals(principal.getName())) {
+        if (!isAdmin && !currentActivity.get().getUser().equals(principal.getName())) {
             throw new AccessDeniedException("No access to activity.");
         }
         activityRepository.deleteById(id);

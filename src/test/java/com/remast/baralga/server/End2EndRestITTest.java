@@ -53,6 +53,23 @@ class End2EndRestITTest extends AbstractEnd2EndTest {
 
         var project = response.getBody().get(0);
         assertThat(project.get("title").textValue()).isEqualTo("My Project");
+        assertThat(project.get("links").size()).isEqualTo(3);
+    }
+
+    @Test
+    void readProjectsAsUser() {
+        // Arrange
+
+        // Act
+        var response = executeRequest(GET, "/api/projects", null, Role.User);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody().size()).isPositive();
+
+        var project = response.getBody().get(0);
+        assertThat(project.get("title").textValue()).isEqualTo("My Project");
+        assertThat(project.get("links").size()).isEqualTo(1);
     }
 
     @Test
@@ -85,6 +102,26 @@ class End2EndRestITTest extends AbstractEnd2EndTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody().get("id")).isNotNull();
         assertThat(response.getBody().get("title").textValue()).isEqualTo("Yet Another Project");
+    }
+
+    @Test
+    void updateProject() {
+        // Arrange
+        var projectId = arrangeProject();
+
+        var projectJson = objectMapper.createObjectNode();
+        projectJson.put("id", projectId);
+        projectJson.put("title", "My Updated project");
+        projectJson.put("description", "My Updated Description");
+        projectJson.put("active", "false");
+
+        // Act
+        var response = executeRequest(PATCH, "/api/projects/" + projectId, projectJson);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody().get("id")).isNotNull();
+        assertThat(response.getBody().get("title").textValue()).isEqualTo("My Updated project");
     }
 
     @Test

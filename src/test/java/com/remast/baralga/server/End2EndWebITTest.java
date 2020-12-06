@@ -56,7 +56,7 @@ class End2EndWebITTest extends AbstractEnd2EndTest {
 
     private ResponseEntity<String> executeWebRequest(HttpMethod method, String path, LinkedMultiValueMap<String, String> formData) {
         if (method == GET) {
-            return restTemplateWithValidAuth().exchange(urlWith(path),
+            return restTemplateWithAdminAuth().exchange(urlWith(path),
                     method,
                     null,
                     String.class);
@@ -65,7 +65,7 @@ class End2EndWebITTest extends AbstractEnd2EndTest {
         var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        return restTemplateWithValidAuth().postForEntity(
+        return restTemplateWithAdminAuth().postForEntity(
                 urlWith(path),
                 formData,
                 String.class);

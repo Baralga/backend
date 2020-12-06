@@ -32,18 +32,23 @@ public class ActivityRestController {
 
     @Transactional(readOnly = true)
     @GetMapping(path = "/{id}")
-    public Optional<ActivityRepresentation> getById(@PathVariable String id) {
-        return activityRepository.findById(id).map(ActivityRepresentation::new);
+    public ResponseEntity<ActivityRepresentation> getById(@PathVariable String id, HttpServletRequest request, Principal principal) {
+        var activity = activityRepository.findById(id);
+        if (activity.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(new ActivityRepresentation(activity.get(), principal, request.isUserInRole("ROLE_ADMIN")));
     }
 
     @DeleteMapping(path = "/{id}")
-    public void delete(@PathVariable String id, HttpServletRequest request, Principal principal) {
+    public ResponseEntity<ActivityRepresentation> delete(@PathVariable String id, HttpServletRequest request, Principal principal) {
         activityService.deleteById(id, principal, request.isUserInRole("ROLE_ADMIN"));
+        return ResponseEntity.ok().build();
     }
 
     @Transactional(readOnly = true)
     @GetMapping
-    public ActivitiesRepresentation get(@RequestParam(name = "start", required = false) String startParam, @RequestParam(name = "end", required = false) String endParam, Principal principal) {
+    public ActivitiesRepresentation get(@RequestParam(name = "start", required = false) String startParam, @RequestParam(name = "end", required = false) String endParam, HttpServletRequest request, Principal principal) {
         var start = startParam != null ? LocalDate.parse(startParam, DATE_FORMAT).atStartOfDay() : null;
         var end = endParam != null ? LocalDate.parse(endParam, DATE_FORMAT).atStartOfDay() : null;
         var activitiesFilter = ActivityFilter.builder()
@@ -53,29 +58,31 @@ public class ActivityRestController {
                 .build();
 
         var activities = activityService.read(activitiesFilter);
+        var isAdmin = request.isUserInRole("ROLE_ADMIN");
 
         return ActivitiesRepresentation.builder()
-                .data(activities.getFirst().stream().map(ActivityRepresentation::new).collect(Collectors.toList()))
-                .projectRefs(activities.getSecond().stream().map(ProjectRepresentation::new).collect(Collectors.toList()))
+                .data(activities.getFirst().stream().map(a -> new ActivityRepresentation(a, principal, isAdmin)).collect(Collectors.toList()))
+                .projectRefs(activities.getSecond().stream().map(p -> new ProjectRepresentation(p, isAdmin)).collect(Collectors.toList()))
                 .build();
     }
 
     @PostMapping
-    public ResponseEntity<ActivityRepresentation> create(@RequestBody ActivityRepresentation activityRepresentation, Principal principal) {
+    public ResponseEntity<ActivityRepresentation> create(@RequestBody ActivityRepresentation activityRepresentation, HttpServletRequest request, Principal principal) {
         var activity = activityService.create(activityRepresentation.map(), principal);
         var href = fromController(ActivityRestController.class)
                 .path("/{id}")
                 .buildAndExpand(activity.getId())
                 .toUri();
-        return ResponseEntity.created(href).body(new ActivityRepresentation(activity));
+        return ResponseEntity.created(href).body(new ActivityRepresentation(activity, principal, request.isUserInRole("ROLE_ADMIN")));
     }
 
-    @PutMapping(path = "/{id}")
+    @PatchMapping(path = "/{id}")
     public ResponseEntity<ActivityRepresentation> update(@PathVariable final String id, @RequestBody ActivityRepresentation activityRepresentation, HttpServletRequest request, Principal principal) {
-        var updatedActivity  = activityService.update(activityRepresentation.map(), principal, request.isUserInRole("ROLE_ADMIN"));
+        var isAdmin = request.isUserInRole("ROLE_ADMIN");
+        var updatedActivity  = activityService.update(activityRepresentation.map(), principal, isAdmin);
         if (updatedActivity.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok().body(new ActivityRepresentation(updatedActivity.get()));
+        return ResponseEntity.ok().body(new ActivityRepresentation(updatedActivity.get(), principal, isAdmin));
     }
 }
