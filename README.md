@@ -6,6 +6,11 @@ Backend for multi user usage of the Baralga time tracking application.
 
 ## Administration
 
+### Running the server backend
+
+To run the server just start executable jar with the command `java -jar baralga-backend-0.0.1.jar`. You need at 
+least Java version 13 but newer ones should work too.
+
 ### Configuration
 
 The backend is configured using the following environment variables:
