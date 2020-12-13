@@ -16,7 +16,7 @@ class ActivitiesFilterWebTest {
         var activitiesFilter = new ActivitiesFilterWeb();
 
         // Assert
-        assertThat(activitiesFilter.getInterval()).isEqualTo(ActivitiesFilterWeb.IntervalType.YEAR);
+        assertThat(activitiesFilter.getTimespan()).isEqualTo(ActivitiesFilterWeb.TimespanType.YEAR);
         assertThat(activitiesFilter.getStart()).isNotNull();
         assertThat(activitiesFilter.getStart().getYear()).isEqualTo(LocalDateTime.now().getYear());
         assertThat(activitiesFilter.getEnd()).isNotNull();
@@ -31,7 +31,7 @@ class ActivitiesFilterWebTest {
         var activitiesFilter = new ActivitiesFilterWeb().previous();
 
         // Assert
-        assertThat(activitiesFilter.getInterval()).isEqualTo(ActivitiesFilterWeb.IntervalType.YEAR);
+        assertThat(activitiesFilter.getTimespan()).isEqualTo(ActivitiesFilterWeb.TimespanType.YEAR);
         assertThat(activitiesFilter.getStart()).isNotNull();
         assertThat(activitiesFilter.getStart().getYear()).isEqualTo(LocalDateTime.now().getYear() - 1);
         assertThat(activitiesFilter.getEnd()).isNotNull();
@@ -45,7 +45,7 @@ class ActivitiesFilterWebTest {
         var activitiesFilter = new ActivitiesFilterWeb().next();
 
         // Assert
-        assertThat(activitiesFilter.getInterval()).isEqualTo(ActivitiesFilterWeb.IntervalType.YEAR);
+        assertThat(activitiesFilter.getTimespan()).isEqualTo(ActivitiesFilterWeb.TimespanType.YEAR);
         assertThat(activitiesFilter.getStart()).isNotNull();
         assertThat(activitiesFilter.getStart().getYear()).isEqualTo(LocalDateTime.now().getYear() + 1);
         assertThat(activitiesFilter.getEnd()).isNotNull();
@@ -81,7 +81,7 @@ class ActivitiesFilterWebTest {
         var activitiesFilter = ActivitiesFilterWeb.of(request);
 
         // Assert
-        assertThat(activitiesFilter.getInterval()).isEqualTo(ActivitiesFilterWeb.IntervalType.YEAR);
+        assertThat(activitiesFilter.getTimespan()).isEqualTo(ActivitiesFilterWeb.TimespanType.YEAR);
         assertThat(activitiesFilter.getStart()).isNotNull();
         assertThat(activitiesFilter.getStart().getYear()).isEqualTo(2020);
         assertThat(activitiesFilter.getStart().getDayOfMonth()).isEqualTo(1);
@@ -99,7 +99,7 @@ class ActivitiesFilterWebTest {
         var activitiesFilter = ActivitiesFilterWeb.of(request);
 
         // Assert
-        assertThat(activitiesFilter.getInterval()).isEqualTo(ActivitiesFilterWeb.IntervalType.YEAR);
+        assertThat(activitiesFilter.getTimespan()).isEqualTo(ActivitiesFilterWeb.TimespanType.YEAR);
         assertThat(activitiesFilter.getStart()).isNotNull();
         assertThat(activitiesFilter.getStart().getYear()).isEqualTo(LocalDateTime.now().getYear());
         assertThat(activitiesFilter.getEnd()).isNotNull();

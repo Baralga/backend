@@ -21,18 +21,18 @@ public class ActivitiesFilterWeb {
 
     private LocalDateTime end;
 
-    private IntervalType interval;
+    private TimespanType timespan;
 
     private String user;
 
     public ActivitiesFilterWeb() {
-        interval = IntervalType.YEAR;
+        timespan = TimespanType.YEAR;
         init();
     }
 
     private void init() {
         var now = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
-        switch (interval) {
+        switch (timespan) {
             case DAY:
                 start = now;
                 break;
@@ -49,8 +49,8 @@ public class ActivitiesFilterWeb {
     public static ActivitiesFilterWeb of(final HttpServletRequest request) {
         var activitiesFilter = new ActivitiesFilterWeb();
 
-        if (request.getParameter("interval") != null) {
-            activitiesFilter.setInterval(IntervalType.valueOf(request.getParameter("interval").toUpperCase()));
+        if (request.getParameter("timespan") != null) {
+            activitiesFilter.setTimespan(TimespanType.valueOf(request.getParameter("interval").toUpperCase()));
             activitiesFilter.init();
         }
 
@@ -68,7 +68,7 @@ public class ActivitiesFilterWeb {
     public ActivitiesFilterWeb next() {
         return ActivitiesFilterWeb.builder()
                 .user(user)
-                .interval(interval)
+                .timespan(timespan)
                 .start(next(start))
                 .end(next(end))
                 .build();
@@ -77,7 +77,7 @@ public class ActivitiesFilterWeb {
     public ActivitiesFilterWeb previous() {
         return ActivitiesFilterWeb.builder()
                 .user(user)
-                .interval(interval)
+                .timespan(timespan)
                 .start(previous(start))
                 .end(previous(end))
                 .build();
@@ -92,7 +92,7 @@ public class ActivitiesFilterWeb {
     }
 
     public LocalDateTime previous(LocalDateTime date) {
-        switch (interval) {
+        switch (timespan) {
             case DAY:
                 return date.minusDays(1);
             case MONTH:
@@ -100,11 +100,11 @@ public class ActivitiesFilterWeb {
             case YEAR:
                 return date.minusYears(1);
         }
-        throw new IllegalStateException("Interval " + interval + " not supported."); // NOSONAR
+        throw new IllegalStateException("Interval " + timespan + " not supported."); // NOSONAR
     }
 
     private LocalDateTime next(LocalDateTime date) {
-        switch (interval) {
+        switch (timespan) {
             case DAY:
                 return date.plusDays(1);
             case MONTH:
@@ -112,17 +112,17 @@ public class ActivitiesFilterWeb {
             case YEAR:
                 return date.plusYears(1);
         }
-        throw new IllegalStateException("Interval " + interval + " not supported."); // NOSONAR
+        throw new IllegalStateException("Interval " + timespan + " not supported."); // NOSONAR
     }
 
-    public enum IntervalType {
+    public enum TimespanType {
         DAY,
         MONTH,
         YEAR
     }
 
     public String toString() {
-        switch (interval) {
+        switch (timespan) {
             case DAY:
                 return DateTimeFormatter.ofPattern("dd/MM/yyyy").format(start);
             case MONTH:
@@ -130,7 +130,7 @@ public class ActivitiesFilterWeb {
             case YEAR:
                 return DateTimeFormatter.ofPattern("YYYY").format(start);
         }
-        throw new IllegalStateException("Interval " + interval + " not supported."); // NOSONAR
+        throw new IllegalStateException("Interval " + timespan + " not supported."); // NOSONAR
     }
 
 

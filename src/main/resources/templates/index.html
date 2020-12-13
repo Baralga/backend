@@ -24,19 +24,19 @@
                     </div>
 
                     <div class="button">
-                        <a th:href="@{/(interval=${#strings.toLowerCase(previousFilter.interval)},start=${#temporals.format(previousFilter.start, 'yyyy-MM-dd')}, end=${#temporals.format(previousFilter.end, 'yyyy-MM-dd')})}" class="icon is-medium">
+                        <a th:href="@{/(timespan=${#strings.toLowerCase(previousFilter.timespan)},start=${#temporals.format(previousFilter.start, 'yyyy-MM-dd')}, end=${#temporals.format(previousFilter.end, 'yyyy-MM-dd')})}" class="icon is-medium">
                             <i class="fa fa-angle-left"></i>
                         </a>
                     </div>
 
                     <div class="button">
-                        <a th:href="@{/(interval=${#strings.toLowerCase(nextFilter.interval)})}" class="icon is-medium">
+                        <a th:href="@{/(timespan=${#strings.toLowerCase(nextFilter.timespan)})}" class="icon is-medium">
                           <i class="fa fa-home"></i>
                         </a>
                     </div>
 
                     <div class="button">
-                        <a th:href="@{/(interval=${#strings.toLowerCase(nextFilter.interval)},start=${#temporals.format(nextFilter.start, 'yyyy-MM-dd')}, end=${#temporals.format(nextFilter.end, 'yyyy-MM-dd')})}" class="icon is-medium">
+                        <a th:href="@{/(timespan=${#strings.toLowerCase(nextFilter.timespan)},start=${#temporals.format(nextFilter.start, 'yyyy-MM-dd')}, end=${#temporals.format(nextFilter.end, 'yyyy-MM-dd')})}" class="icon is-medium">
                           <i class="fa fa-angle-right"></i>
                         </a>
                     </div>
@@ -65,7 +65,7 @@
             <div class="card-content">
                 <div class="content">
                     <div class="columns is-mobile">
-                        <div class="column is-5" th:text="${projects[activity.projectRef].title}"></div>
+                        <div class="column is-5" th:text="${projects[activity.projectId].title}"></div>
                         <div class="column is-4"
                              th:text="${#temporals.format(activity.start, 'HH:mm')} + ' - ' + ${#temporals.format(activity.end, 'HH:mm')}"></div>
                         <div class="column is-3" sec:authorize="hasRole('ADMIN')" th:text="${activity.user}"></div>
