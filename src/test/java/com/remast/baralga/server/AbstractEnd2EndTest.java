@@ -58,6 +58,13 @@ public abstract class AbstractEnd2EndTest {
         activityJson.put("description", "My Activity");
         activityJson.put("start", "2020-11-21T10:00:00.0000000");
         activityJson.put("end", "2020-11-21T17:00:00.0000000");
+
+        var linksJson = objectMapper.createObjectNode();
+        var projectLinkJson = objectMapper.createObjectNode();
+        projectLinkJson.put("href", urlWith("/api/projects/" + projectId));
+        linksJson.set("project", projectLinkJson);
+        activityJson.set("_links", linksJson);
+
         var response = executeRequest(POST, "/api/activities", activityJson);
         return response.getBody().get("id").asText();
     }

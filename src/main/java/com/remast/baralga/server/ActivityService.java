@@ -88,7 +88,7 @@ public class ActivityService {
         var projects = new ArrayList<Project>();
         var projectsIterable = projectRepository.findAllById(
                 activities.stream()
-                        .map(Activity::getProjectRef)
+                        .map(Activity::getProjectId)
                         .collect(Collectors.toList())
         );
         projectsIterable.forEach(projects::add);

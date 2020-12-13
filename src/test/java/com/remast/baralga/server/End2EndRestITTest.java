@@ -51,9 +51,11 @@ class End2EndRestITTest extends AbstractEnd2EndTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().size()).isPositive();
 
-        var project = response.getBody().get(0);
+        assertThat(response.getBody().get("_links").size()).isEqualTo(1);
+
+        var project = response.getBody().get("_embedded").get("projects").get(0);
         assertThat(project.get("title").textValue()).isEqualTo("My Project");
-        assertThat(project.get("links").size()).isEqualTo(3);
+        assertThat(project.get("_links").size()).isEqualTo(3);
     }
 
     @Test
@@ -67,9 +69,11 @@ class End2EndRestITTest extends AbstractEnd2EndTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().size()).isPositive();
 
-        var project = response.getBody().get(0);
+        assertThat(response.getBody().has("_links")).isFalse();
+
+        var project = response.getBody().get("_embedded").get("projects").get(0);
         assertThat(project.get("title").textValue()).isEqualTo("My Project");
-        assertThat(project.get("links").size()).isEqualTo(1);
+        assertThat(project.get("_links").size()).isEqualTo(1);
     }
 
     @Test
@@ -83,7 +87,7 @@ class End2EndRestITTest extends AbstractEnd2EndTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().size()).isPositive();
 
-        var project = response.getBody().get(0);
+        var project = response.getBody().get("_embedded").get("projects").get(0);
         assertThat(project.get("active").booleanValue()).isTrue();
     }
 
@@ -129,7 +133,7 @@ class End2EndRestITTest extends AbstractEnd2EndTest {
         // Arrange
         var projectId = arrangeProject();
         var responseProjectsBefore = executeRequest(GET, "/api/projects");
-        var countProjectsBefore = responseProjectsBefore.getBody().size();
+        var countProjectsBefore = responseProjectsBefore.getBody().get("_embedded").get("projects").size();
 
         // Act
         var response = executeRequest(DELETE, "/api/projects/" + projectId);
@@ -137,7 +141,7 @@ class End2EndRestITTest extends AbstractEnd2EndTest {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         var responseProjectsAfter = executeRequest(GET, "/api/projects");
-        var countProjectsAfter = responseProjectsAfter.getBody().size();
+        var countProjectsAfter = responseProjectsAfter.getBody().get("_embedded").get("projects").size();
         assertThat(countProjectsAfter).isEqualTo(countProjectsBefore - 1);
     }
 
@@ -188,10 +192,15 @@ class End2EndRestITTest extends AbstractEnd2EndTest {
     void createActivity() {
         // Arrange
         var activityJson = objectMapper.createObjectNode();
-        activityJson.put("projectRef", INITIAL_PROJECT_ID);
         activityJson.put("description", "My Activity");
         activityJson.put("start", "2020-11-21T10:00:00.0000000");
         activityJson.put("end", "2020-11-21T17:00:00.0000000");
+
+        var linksJson = objectMapper.createObjectNode();
+        var projectLinkJson = objectMapper.createObjectNode();
+        projectLinkJson.put("href", urlWith("/api/projects/" + INITIAL_PROJECT_ID));
+        linksJson.set("project", projectLinkJson);
+        activityJson.set("_links", linksJson);
 
         // Act
         var response = executeRequest(POST, "/api/activities", activityJson);
@@ -201,8 +210,8 @@ class End2EndRestITTest extends AbstractEnd2EndTest {
         assertThat(response.getBody().get("id")).isNotNull();
         assertThat(response.getBody().get("description").textValue()).isEqualTo("My Activity");
         var responseActivities = executeRequest(GET, "/api/activities");
-        assertThat(responseActivities.getBody().get("data").size()).isPositive();
-        assertThat(responseActivities.getBody().get("projectRefs").size()).isPositive();
+        assertThat(responseActivities.getBody().get("_embedded").get("activities").size()).isPositive();
+        assertThat(responseActivities.getBody().get("_embedded").get("projects").size()).isPositive();
     }
 
     @Test
@@ -214,8 +223,7 @@ class End2EndRestITTest extends AbstractEnd2EndTest {
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().get("data").size()).isZero();
-        assertThat(response.getBody().get("projectRefs").size()).isZero();
+        assertThat(response.getBody().has("_embedded")).isFalse();
     }
 
     @Test
@@ -227,8 +235,7 @@ class End2EndRestITTest extends AbstractEnd2EndTest {
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().get("data").size()).isZero();
-        assertThat(response.getBody().get("projectRefs").size()).isZero();
+        assertThat(response.getBody().has("_embedded")).isFalse();
     }
 
     @Test
@@ -251,11 +258,31 @@ class End2EndRestITTest extends AbstractEnd2EndTest {
         var activityJson = objectMapper.createObjectNode();
         activityJson.put("id", activityId);
 
+        var linksJson = objectMapper.createObjectNode();
+        var projectLinkJson = objectMapper.createObjectNode();
+        projectLinkJson.put("href", urlWith("/api/projects/123"));
+        linksJson.set("project", projectLinkJson);
+        activityJson.set("_links", linksJson);
+
         // Act
         var response = executeRequest(PATCH, "/api/activities/" + activityId, activityJson);
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void updateInvalidActivity() {
+        // Arrange
+        var activityId = "UNKOWN";
+        var activityJson = objectMapper.createObjectNode();
+        activityJson.put("id", activityId);
+
+        // Act
+        var response = executeRequest(PATCH, "/api/activities/" + activityId, activityJson);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
     @Test
@@ -275,7 +302,7 @@ class End2EndRestITTest extends AbstractEnd2EndTest {
         // Arrange
         var activityId = arrangeActivity(INITIAL_PROJECT_ID);
         var responseActivitiesBefore = executeRequest(GET, "/api/activities");
-        var countActivitiesBefore = responseActivitiesBefore.getBody().get("data").size();
+        var countActivitiesBefore = responseActivitiesBefore.getBody().get("_embedded").get("activities").size();
 
         // Act
         var response = executeRequest(DELETE, "/api/activities/" + activityId);
@@ -283,7 +310,7 @@ class End2EndRestITTest extends AbstractEnd2EndTest {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         var responseActivitiesAfter = executeRequest(GET, "/api/activities");
-        var countActivitiesAfter = responseActivitiesAfter.getBody().get("data").size();
+        var countActivitiesAfter = !responseActivitiesAfter.getBody().has("_embedded") ? 0 : responseActivitiesAfter.getBody().get("_embedded").get("activities").size();
         assertThat(countActivitiesAfter).isEqualTo(countActivitiesBefore - 1);
     }
 

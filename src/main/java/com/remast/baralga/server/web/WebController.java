@@ -3,6 +3,11 @@ package com.remast.baralga.server.web;
 import com.remast.baralga.server.*;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,9 +33,9 @@ public class WebController {
     private final @NonNull ProjectService projectService;
 
     @GetMapping("/projects")
-    public String showProjects(Model model) {
+    public String showProjects(Model model, @SortDefault(sort = "title", direction = Sort.Direction.ASC)  @PageableDefault(size = 50) Pageable pageable) {
         model.addAttribute("project", new ProjectModel());
-        model.addAttribute("projects", projectRepository.findByOrderByTitle());
+        model.addAttribute("projects", projectRepository.findAll(pageable));
         return "projects";
     }
 

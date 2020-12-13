@@ -5,23 +5,29 @@ import com.remast.baralga.server.ProjectRepository;
 import com.remast.baralga.server.ProjectService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.SortDefault;
+import org.springframework.hateoas.PagedModel;
+import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.fromController;
 
 @Transactional
 @RestController
 @RequestMapping(value = "/api/projects")
 @RequiredArgsConstructor
+@ExposesResourceFor(ProjectRepresentation.class)
 public class ProjectRestController {
 
     private final @NonNull ProjectService projectService;
@@ -51,17 +57,29 @@ public class ProjectRestController {
 
     @Transactional(readOnly = true)
     @GetMapping
-    public List<ProjectRepresentation> get(@RequestParam(required = false) Boolean active, HttpServletRequest request) {
+    public PagedModel<ProjectRepresentation> get(@RequestParam(required = false) Boolean active, HttpServletRequest request, @SortDefault(sort = "title",
+            direction = Sort.Direction.ASC) Pageable pageable) {
         var isAdmin = request.isUserInRole("ROLE_ADMIN");
+
+        Page<Project> projects;
         if (active != null) {
-            StreamSupport.stream(projectRepository.findByActiveOrderByTitle(active).spliterator(), false)
-                    .map(p -> new ProjectRepresentation(p, isAdmin))
-                    .collect(Collectors.toList());
+            projects = projectService.findAllByActive(active, pageable);
+        } else {
+            projects = projectRepository.findAll(pageable);
         }
 
-        return StreamSupport.stream(projectRepository.findByOrderByTitle().spliterator(), false)
-                .map(p -> new ProjectRepresentation(p, isAdmin))
-                .collect(Collectors.toList());
+        var pageModel = PagedModel.of(
+                projects.stream()
+                        .map(p -> new ProjectRepresentation(p, isAdmin))
+                        .collect(Collectors.toList()),
+                new PagedModel.PageMetadata(projects.getSize(), projects.getNumber(), projects.getTotalElements())
+        );
+
+        if (isAdmin) {
+            pageModel.add(linkTo(methodOn(ProjectRestController.class).create( null, null)).withRel("create"));
+        }
+
+        return pageModel;
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -80,7 +98,7 @@ public class ProjectRestController {
     public ResponseEntity<ProjectRepresentation> update(@PathVariable String id, @RequestBody ProjectRepresentation project, HttpServletRequest request) {
         var currentActivity = projectRepository.findById(id);
         if (currentActivity.isEmpty()) {
-            return  ResponseEntity.notFound().build();
+            return ResponseEntity.notFound().build();
         }
         project.setId(id);
         return ResponseEntity.ok().body(new ProjectRepresentation(projectRepository.save(project.map()), request.isUserInRole("ROLE_ADMIN")));
