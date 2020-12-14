@@ -50,7 +50,7 @@ public class ActivitiesFilterWeb {
         var activitiesFilter = new ActivitiesFilterWeb();
 
         if (request.getParameter("timespan") != null) {
-            activitiesFilter.setTimespan(TimespanType.valueOf(request.getParameter("interval").toUpperCase()));
+            activitiesFilter.setTimespan(TimespanType.valueOf(request.getParameter("timespan").toUpperCase()));
             activitiesFilter.init();
         }
 

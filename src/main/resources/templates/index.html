@@ -24,19 +24,19 @@
                     </div>
 
                     <div class="button">
-                        <a th:href="@{/(timespan=${#strings.toLowerCase(previousFilter.timespan)},start=${#temporals.format(previousFilter.start, 'yyyy-MM-dd')}, end=${#temporals.format(previousFilter.end, 'yyyy-MM-dd')})}" class="icon is-medium">
+                        <a th:href="@{/(timespan=${#strings.toLowerCase(previousFilter.timespan)},start=${#temporals.format(previousFilter.start, 'yyyy-MM-dd')}, end=${#temporals.format(previousFilter.end, 'yyyy-MM-dd')})}" up-target="#b__activities_list" class="icon is-medium">
                             <i class="fa fa-angle-left"></i>
                         </a>
                     </div>
 
                     <div class="button">
-                        <a th:href="@{/(timespan=${#strings.toLowerCase(nextFilter.timespan)})}" class="icon is-medium">
+                        <a th:href="@{/(timespan=${#strings.toLowerCase(nextFilter.timespan)})}" ="#b__activities_list" class="icon is-medium">
                           <i class="fa fa-home"></i>
                         </a>
                     </div>
 
                     <div class="button">
-                        <a th:href="@{/(timespan=${#strings.toLowerCase(nextFilter.timespan)},start=${#temporals.format(nextFilter.start, 'yyyy-MM-dd')}, end=${#temporals.format(nextFilter.end, 'yyyy-MM-dd')})}" class="icon is-medium">
+                        <a th:href="@{/(timespan=${#strings.toLowerCase(nextFilter.timespan)},start=${#temporals.format(nextFilter.start, 'yyyy-MM-dd')}, end=${#temporals.format(nextFilter.end, 'yyyy-MM-dd')})}" up-target="#b__activities_list" class="icon is-medium">
                           <i class="fa fa-angle-right"></i>
                         </a>
                     </div>
@@ -50,7 +50,7 @@
         </nav>
     </div>
 
-    <div class="column is-12" th:each="activity: ${activities}">
+    <div id="b__activities_list" class="column is-12" th:each="activity: ${activities}">
         <div class="card" th:title="${activity.description}">
             <header class="card-header">
                 <p class="card-header-title" th:text="${#temporals.format(activity.start, 'dd/MM/yyyy')}"></p>
