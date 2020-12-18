@@ -1,74 +1,148 @@
 package com.remast.baralga.server;
 
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.*;
-import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
+import java.util.Arrays;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+
+@AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class End2EndWebITTest extends AbstractEnd2EndTest {
 
+    @Autowired
+    private MockMvc mockMvc;
+
     @Test
-    void readProjects() {
+    public void loginAvailableForAll() throws Exception {
         // Arrange
 
         // Act
-        var response = executeWebRequest(GET, "/projects");
+        var resultActions = mockMvc.perform(get("/login"));
 
         // Assert
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
+        resultActions.andExpect(status().isOk());
     }
 
     @Test
-    void createProject() {
+    public void loginUser() throws Exception {
         // Arrange
-        var projectForm = new LinkedMultiValueMap<String, String>();
-        projectForm.add("title", "Yet Another Project");
 
         // Act
-        var response = executeWebRequest(POST, "/projects", projectForm);
+        var resultActions = mockMvc.perform(formLogin().user("admin").password("adm1n"));
 
         // Assert
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+        resultActions.andExpect(status().isFound());
     }
 
+    @WithMockUser(value = "admin", authorities = "ROLE_ADMIN")
     @Test
-    void readActivities() {
+    void readProjects() throws Exception {
         // Arrange
 
         // Act
-        var response = executeWebRequest(GET, "/");
+        var resultActions = mockMvc.perform(get("/projects"));
 
         // Assert
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
+        resultActions.andExpect(status().isOk())
+                .andExpect(content().string(containsString("id=\"b__projects_list\"")));
     }
 
-    private ResponseEntity<String> executeWebRequest(HttpMethod method, String path) {
-        return executeWebRequest(method, path, null);
+    @WithMockUser(value = "admin", authorities = "ROLE_ADMIN")
+    @Test
+    void createProject() throws Exception {
+        // Arrange
+        var projectForm = EntityUtils.toString(
+                new UrlEncodedFormEntity(Arrays.asList(
+                        new BasicNameValuePair("title", "My Title")
+                ))
+        );
+
+        // Act
+        var resultActions = mockMvc.perform(post("/projects").with(csrf())
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .content(projectForm));
+
+        // Assert
+        resultActions.andExpect(status().isFound())
+                .andExpect(header().string("Location", "/projects"));
     }
 
-    private ResponseEntity<String> executeWebRequest(HttpMethod method, String path, LinkedMultiValueMap<String, String> formData) {
-        if (method == GET) {
-            return restTemplateWithAdminAuth().exchange(urlWith(path),
-                    method,
-                    null,
-                    String.class);
-        }
+    @WithMockUser(value = "user", authorities = "ROLE_USER")
+    @Test
+    void createActivity() throws Exception {
+        // Arrange
+        var projectId = arrangeProject();
+        var activityForm = EntityUtils.toString(
+                new UrlEncodedFormEntity(Arrays.asList(
+                        new BasicNameValuePair("projectId", projectId),
+                        new BasicNameValuePair("day", "01/10/2020"),
+                        new BasicNameValuePair("startTime", "09:00"),
+                        new BasicNameValuePair("endTime", "10:00")
+                ))
+        );
 
-        var headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        // Act
+        var resultActions = mockMvc.perform(post("/activities/new").with(csrf())
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .content(activityForm));
 
-        return restTemplateWithAdminAuth().postForEntity(
-                urlWith(path),
-                formData,
-                String.class);
+        // Assert
+        resultActions.andExpect(status().isFound())
+                .andExpect(header().string("Location", "/"));
+    }
+
+    @WithMockUser(value = "admin", authorities = "ROLE_ADMIN")
+    @Test
+    void updateActivity() throws Exception {
+        // Arrange
+        var projectId = arrangeProject();
+        var activityId = arrangeActivity(projectId);
+        var activityForm = EntityUtils.toString(
+                new UrlEncodedFormEntity(Arrays.asList(
+                        new BasicNameValuePair("id", activityId),
+                        new BasicNameValuePair("projectId", projectId),
+                        new BasicNameValuePair("day", "01/10/2020"),
+                        new BasicNameValuePair("startTime", "09:00"),
+                        new BasicNameValuePair("endTime", "10:00")
+                ))
+        );
+
+        // Act
+        var resultActions = mockMvc.perform(post("/activities/" + activityId).with(csrf())
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .content(activityForm));
+
+        // Assert
+        resultActions.andExpect(status().isFound())
+                .andExpect(header().string("Location", "/"));
+    }
+
+    @WithMockUser(value = "user", authorities = "ROLE_USER")
+    @Test
+    void readActivities() throws Exception {
+        // Arrange
+
+        // Act
+        var resultActions = mockMvc.perform(get("/"));
+
+        // Assert
+        resultActions.andExpect(status().isOk())
+                .andExpect(content().string(containsString("id=\"b__activities_list\"")));
     }
 
 }

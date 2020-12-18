@@ -224,7 +224,6 @@ class End2EndRestITTest extends AbstractEnd2EndTest {
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().has("_embedded")).isFalse();
     }
 
     @Test
@@ -236,7 +235,6 @@ class End2EndRestITTest extends AbstractEnd2EndTest {
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().has("_embedded")).isFalse();
     }
 
     @Test
