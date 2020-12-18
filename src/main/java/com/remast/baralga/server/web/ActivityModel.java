@@ -59,7 +59,7 @@ public class ActivityModel {
         this.projectId = activity.getProjectId();
     }
 
-    public List<ObjectError> validate() {
+    public List<ObjectError> validateDates() {
         var errors = new ArrayList<ObjectError>();
 
         if (day != null) {

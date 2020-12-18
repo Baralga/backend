@@ -60,7 +60,7 @@ public class ActivityWebController {
 
     @PostMapping("/activities/new")
     public String createActivity(@Valid ActivityModel activityModel, BindingResult bindingResult, Principal principal) {
-        activityModel.validate().stream().forEach(e -> bindingResult.addError(e));
+        activityModel.validateDates().stream().forEach(e -> bindingResult.addError(e));
         if (bindingResult.hasErrors()) {
             return "redirect:/activities/new";
         }
@@ -94,7 +94,7 @@ public class ActivityWebController {
 
     @PostMapping("/activities/{id}")
     public String updateActivity(@PathVariable final String id, @Valid ActivityModel activityModel, BindingResult bindingResult, HttpServletRequest request, Principal principal) {
-        activityModel.validate().stream().forEach(e -> bindingResult.addError(e));
+        activityModel.validateDates().stream().forEach(e -> bindingResult.addError(e));
         if (bindingResult.hasErrors()) {
             return "redirect:/activities/" + id;
         }

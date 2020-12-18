@@ -36,8 +36,9 @@ class End2EndRestITTest extends AbstractEnd2EndTest {
                 new HttpEntity<>(headers),
                 JsonNode.class);
 
-        // Asset
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+        assertThat(response.getHeaders().getFirst("WWW-Authenticate")).contains("Basic realm=");
     }
 
     @Test

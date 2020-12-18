@@ -53,7 +53,7 @@ public class WebSecurityConfig {
         protected void configure(HttpSecurity http) throws Exception {
             http.antMatcher("/api/**").authorizeRequests()
                     .anyRequest().authenticated().and()
-                    .httpBasic().and()
+                    .httpBasic().realmName("Baralga").and()
                     .csrf().disable();
         }
 
