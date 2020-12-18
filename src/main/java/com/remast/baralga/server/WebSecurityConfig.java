@@ -5,21 +5,37 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.authentication.DelegatingAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.util.Assert;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
+import java.io.IOException;
+import java.util.LinkedHashMap;
 
-@Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig {
 
     private final @NonNull DataSource dataSource;
 
@@ -28,32 +44,33 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         auth.jdbcAuthentication()
                 .passwordEncoder(passwordEncoder())
                 .dataSource(dataSource);
+    }
+
+    @Configuration
+    @Order(1)
+    public static class ApiWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
+
+        protected void configure(HttpSecurity http) throws Exception {
+            http.antMatcher("/api/**").authorizeRequests()
+                    .anyRequest().authenticated().and()
+                    .httpBasic().realmName("Baralga").and()
+                    .csrf().disable();
+        }
 
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers("/actuator/*").permitAll()
-                .antMatchers("/api/*").authenticated()
-                .and()
-                .csrf().disable()
-                .httpBasic();
+    @Configuration
+    public static class FormLoginWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
-        http.authorizeRequests()
-                .antMatchers("/", "/home").authenticated()
-                .anyRequest().authenticated()
-                .and()
-                .csrf().disable()
-                .formLogin()
-//                .loginPage("/login")
-                .permitAll()
-                .and()
-                .logout()
-                .permitAll()
-                .and()
-                .rememberMe()
-                .key("baralga-backend");
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http.authorizeRequests()
+                    .antMatchers("/webjars/**").permitAll()
+                    .antMatchers("/actuator/**").permitAll()
+                    .anyRequest().authenticated().and()
+                    .formLogin().loginPage("/login").permitAll();
+        }
+
     }
 
     @Bean

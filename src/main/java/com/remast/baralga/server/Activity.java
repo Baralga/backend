@@ -42,6 +42,6 @@ public class Activity {
     private LocalDateTime end;
 
     @Column("project_id")
-    private String projectRef;
+    private String projectId;
 
 }

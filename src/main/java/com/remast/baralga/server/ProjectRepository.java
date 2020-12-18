@@ -1,10 +1,14 @@
 package com.remast.baralga.server;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
-public interface ProjectRepository extends CrudRepository<Project, String> {
+import java.util.List;
 
-    Iterable<Project> findByOrderByTitle();
+public interface ProjectRepository extends PagingAndSortingRepository<Project, String> {
 
-    Iterable<Project>  findByActiveOrderByTitle(Boolean active);
+    List<Project> findAllByActive(Boolean active, Pageable pageable);
+
+    Long countAllByActive(Boolean active);
+
 }

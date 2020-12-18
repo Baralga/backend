@@ -7,12 +7,12 @@
 </head>
 <body>
 
-<div  layout:fragment="content">
+<div layout:fragment="content">
 
     <h1 class="title is-1">Projects</h1>
 
     <div class="columns is-multiline">
-        <form th:action="@{/projects}" th:object="${project}" method="POST" class="column is-12" sec:authorize="hasRole('ADMIN')">
+        <form th:action="@{/projects}" th:object="${project}" method="POST" up-target="body" class="column is-12" sec:authorize="hasRole('ADMIN')">
 
             <div class="field">
                 <label class="label">Name</label>
@@ -41,7 +41,7 @@
 
         </form>
 
-        <div class=" column is-12"  th:each="project: ${projects}">
+        <div id="b__projects_list" class="column is-12"  th:each="project: ${projects}">
             <div class="card" th:title=${project.title}>
                 <header class="card-header">
                     <p class="card-header-title" th:text="${project.title}"></p>
@@ -60,9 +60,6 @@
     </div>
 
 </div>
-
-
-
 
 </body>
 </html>

@@ -78,3 +78,39 @@ BARALGA_DS_PASSWORD=postgres
 ### Health Check
 
 A health check is available at `http://localhost:8080/actuator/health`.
+
+
+### Troubleshooting
+
+
+#### MySQL error `Invalid default value for 'end_time'`
+
+If you get the following error on MySql:
+
+```
+Caused by: org.flywaydb.core.internal.sqlscript.FlywaySqlScriptException:
+Migration V1__setup_database.sql failed
+---------------------------------------
+SQL State  : 42000
+Error Code : 1067
+Message    : Invalid default value for 'end_time'
+Location   : db/migration/V1__setup_database.sql (/home/valadmin/file:/home/valadmin/baralga-backend-0.1.0.jar!/BOOT-INF/classes!/db/migration/V1__setup_database.sql)
+Line       : 11
+Statement  : create table activity (
+     activity_id  varchar(36) not null,
+     description  varchar(4000),
+     username     varchar(36) not null,
+     start_time   timestamp,
+     end_time     timestamp,
+     project_id   varchar(36) not null,
+     FOREIGN key (project_id) REFERENCES project(project_id)
+)
+```
+
+**Solution**
+
+This can be fixed with the following settings:
+```
+Sql_mode =ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+```
+

@@ -3,13 +3,13 @@ package com.remast.baralga.server.web;
 import com.remast.baralga.server.Project;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ProjectModelTest {
 
     @Test
     void create() {
-        // Arange
+        // Arrange
         var project = new Project();
         project.setActive(true);
         project.setDescription("Description");
@@ -20,15 +20,15 @@ class ProjectModelTest {
         var projectModel = new ProjectModel(project);
 
         // Assert
-        assertEquals(project.getActive(), projectModel.getActive());
-        assertEquals(project.getTitle(), projectModel.getTitle());
-        assertEquals(project.getId(), projectModel.getId());
-        assertEquals(project.getDescription(), projectModel.getDescription());
+        assertThat(project.getActive()).isEqualTo(projectModel.getActive());
+        assertThat(project.getTitle()).isEqualTo(projectModel.getTitle());
+        assertThat(project.getId()).isEqualTo(projectModel.getId());
+        assertThat(project.getDescription()).isEqualTo(projectModel.getDescription());
     }
 
     @Test
     void map() {
-        // Arange
+        // Arrange
         var projectModel = new ProjectModel();
         projectModel.setActive(true);
         projectModel.setDescription("Description");
@@ -39,9 +39,9 @@ class ProjectModelTest {
         var project = projectModel.map();
 
         // Assert
-        assertEquals(projectModel.getActive(), project.getActive());
-        assertEquals(projectModel.getTitle(), project.getTitle());
-        assertEquals(projectModel.getId(), project.getId());
-        assertEquals(projectModel.getDescription(), project.getDescription());
+        assertThat(projectModel.getActive()).isEqualTo(project.getActive());
+        assertThat(projectModel.getTitle()).isEqualTo(project.getTitle());
+        assertThat(projectModel.getId()).isEqualTo(project.getId());
+        assertThat(projectModel.getDescription()).isEqualTo(project.getDescription());
     }
 }
