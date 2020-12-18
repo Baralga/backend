@@ -135,7 +135,6 @@ class ActivitiesFilterWebTest {
         assertThat(activitiesFilter.getEnd().getDayOfMonth()).isEqualTo(1);
     }
 
-
     @Test
     void toUrlParamsWithDay() {
         // Arrange
@@ -180,7 +179,6 @@ class ActivitiesFilterWebTest {
         // Assert
         assertThat(urlFilters).isEqualTo("?timespan=year&date=2020");
     }
-
 
     @Test
     void toUrlParamsWithString() {

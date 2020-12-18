@@ -9,7 +9,7 @@ class ProjectModelTest {
 
     @Test
     void create() {
-        // Arange
+        // Arrange
         var project = new Project();
         project.setActive(true);
         project.setDescription("Description");
@@ -28,7 +28,7 @@ class ProjectModelTest {
 
     @Test
     void map() {
-        // Arange
+        // Arrange
         var projectModel = new ProjectModel();
         projectModel.setActive(true);
         projectModel.setDescription("Description");
