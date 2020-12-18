@@ -8,9 +8,12 @@ import lombok.Data;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Year;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
+import java.util.Locale;
 
 @Data
 @Builder
@@ -25,8 +28,13 @@ public class ActivitiesFilterWeb {
 
     private String user;
 
+    public ActivitiesFilterWeb(TimespanType timespan) {
+        this.timespan = timespan;
+        init();
+    }
+
     public ActivitiesFilterWeb() {
-        timespan = TimespanType.YEAR;
+        this(TimespanType.YEAR);
         init();
     }
 
@@ -46,6 +54,10 @@ public class ActivitiesFilterWeb {
         end = next(start);
     }
 
+    private void initEnd() {
+        end = next(start);
+    }
+
     public static ActivitiesFilterWeb of(final HttpServletRequest request) {
         var activitiesFilter = new ActivitiesFilterWeb();
 
@@ -54,13 +66,30 @@ public class ActivitiesFilterWeb {
             activitiesFilter.init();
         }
 
-        if (request.getParameter("start") != null) {
-            activitiesFilter.setStart(LocalDate.parse(request.getParameter("start"), DateTimeFormatter.ofPattern("yyyy-MM-dd")).atStartOfDay());
+        if (request.getParameter("date") != null) {
+            LocalDateTime start;
+            switch (activitiesFilter.getTimespan()) {
+                case DAY:
+                    start = LocalDate.parse(request.getParameter("date"), DateTimeFormatter.ofPattern("yyyy-MM-dd")).atStartOfDay();
+                    break;
+                case MONTH:
+                    start = YearMonth.parse(request.getParameter("date"), DateTimeFormatter.ofPattern("yyyy-MM"))
+                            .atDay(1)
+                            .atStartOfDay();
+                    break;
+                case YEAR:
+                    start = Year.parse(request.getParameter("date"), DateTimeFormatter.ofPattern("yyyy"))
+                            .atMonth(1)
+                            .atDay(1)
+                            .atStartOfDay();
+                    break;
+                default:
+                    throw new IllegalStateException("Timespan " + activitiesFilter.getTimespan() + " not supported."); // NOSONAR
+            }
+            activitiesFilter.setStart(start);
         }
 
-        if (request.getParameter("end") != null) {
-            activitiesFilter.setEnd(LocalDate.parse(request.getParameter("end"), DateTimeFormatter.ofPattern("yyyy-MM-dd")).atStartOfDay());
-        }
+        activitiesFilter.initEnd();
 
         return activitiesFilter;
     }
@@ -121,17 +150,46 @@ public class ActivitiesFilterWeb {
         YEAR
     }
 
+    public String toUrlParams() {
+        return toUrlParams(timespan);
+    }
+
+    public String toUrlParams(String timespan) {
+        return toUrlParams(TimespanType.valueOf(timespan.toUpperCase()));
+    }
+
+    public String toUrlParams(TimespanType timespan) {
+        var urlParams = new StringBuilder()
+                .append("?")
+                .append("timespan=")
+                .append(timespan.name().toLowerCase())
+                .append("&date=");
+        switch (timespan) {
+            case DAY:
+                urlParams.append(DateTimeFormatter.ofPattern("yyyy-MM-dd").format(start));
+                break;
+            case MONTH:
+                urlParams.append(DateTimeFormatter.ofPattern("yyyy-MM").format(start));
+                break;
+            case YEAR:
+                urlParams.append(DateTimeFormatter.ofPattern("yyyy").format(start));
+                break;
+            default:
+                throw new IllegalStateException("Timespan " + timespan + " not supported."); // NOSONAR
+        }
+        return urlParams.toString();
+    }
+
     public String toString() {
         switch (timespan) {
             case DAY:
-                return DateTimeFormatter.ofPattern("dd/MM/yyyy").format(start);
+                return DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.ENGLISH).format(start);
             case MONTH:
-                return DateTimeFormatter.ofPattern("LLLLLLLL").format(start);
+                return DateTimeFormatter.ofPattern("MMMM", Locale.ENGLISH).format(start);
             case YEAR:
-                return DateTimeFormatter.ofPattern("YYYY").format(start);
+                return DateTimeFormatter.ofPattern("YYYY", Locale.ENGLISH).format(start);
         }
-        throw new IllegalStateException("Interval " + timespan + " not supported."); // NOSONAR
+        throw new IllegalStateException("Timespan " + timespan + " not supported."); // NOSONAR
     }
-
 
 }

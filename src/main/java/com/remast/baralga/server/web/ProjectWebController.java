@@ -1,9 +1,9 @@
 package com.remast.baralga.server.web;
 
-import com.remast.baralga.server.*;
+import com.remast.baralga.server.ProjectRepository;
+import com.remast.baralga.server.ProjectService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -16,24 +16,18 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-
-import javax.servlet.http.HttpServletRequest;
-import java.security.Principal;
-import java.util.stream.Collectors;
 
 @Transactional
 @Controller
 @RequiredArgsConstructor
-public class WebController {
-
-    private final @NonNull ActivityService activityService;
+public class ProjectWebController {
 
     private final @NonNull ProjectRepository projectRepository;
 
     private final @NonNull ProjectService projectService;
 
+    @Transactional(readOnly = true)
     @GetMapping("/projects")
     public String showProjects(Model model, @SortDefault(sort = "title", direction = Sort.Direction.ASC)  @PageableDefault(size = 50) Pageable pageable) {
         model.addAttribute("project", new ProjectModel());
@@ -49,29 +43,6 @@ public class WebController {
         }
         projectService.create(project.map());
         return "redirect:/projects";
-    }
-
-    @GetMapping("/")
-    public String showHome(Model model, HttpServletRequest request, Principal principal) {
-        var activitiesFilter = ActivitiesFilterWeb.of(request);
-        if (!request.isUserInRole("ROLE_ADMIN")) {
-            activitiesFilter.setUser(principal.getName());
-        }
-
-        model.addAttribute("currentFilter", activitiesFilter);
-        model.addAttribute("previousFilter", activitiesFilter.previous());
-        model.addAttribute("nextFilter", activitiesFilter.next());
-
-        var activities = activityService.read(activitiesFilter.map());
-        model.addAttribute("activities", activities.getFirst());
-        model.addAttribute("projects", activities.getSecond().stream()
-                .collect(Collectors.toMap(Project::getId, p -> p)));
-        return "index";
-    }
-
-    @GetMapping("/login")
-    public String login(HttpServletResponse response) {
-        return "login";
     }
 
 }

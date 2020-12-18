@@ -18,13 +18,21 @@
 <div layout:fragment="content" class="container">
     <div class="columns is-centered">
         <div class="column is-5-tablet is-4-desktop is-3-widescreen">
-            <form method="POST" action="/login" class="box has-background-light">
+            <form method="POST" th:action="@{/login}" class="box has-background-light">
                 <h3 class="title is-3">Log in</h3>
 
+                <div th:if="${param.error}" class="notification is-danger">
+                    Invalid username and password.
+                </div>
+                <div th:if="${param.logout}" class="notification is-info">
+                    You have been logged out.
+                </div>
+
                 <div class="field">
-                    <label for="" class="label has-text-grey">Username</label>
+                    <label for="username" class="label has-text-grey">Username</label>
                     <div class="control has-icons-left">
                         <input
+                                id="username"
                                 type="text"
                                 placeholder="e.g. bobsmith@gmail.com"
                                 class="input"
@@ -32,13 +40,14 @@
                                 name="username">
                         <span class="icon is-small is-left">
                             <i class="fa fa-envelope"></i>
-            </span>
+                        </span>
                     </div>
                 </div>
                 <div class="field">
-                    <label for="" class="label has-text-grey">Password</label>
+                    <label for="password" class="label has-text-grey">Password</label>
                     <div class="control has-icons-left">
                         <input
+                                id="password"
                                 type="password"
                                 placeholder="*******"
                                 class="input"
@@ -46,15 +55,15 @@
                                 name="password"/>
                         <span class="icon is-small is-left">
                             <i class="fa fa-lock"></i>
-            </span>
+                        </span>
                     </div>
                 </div>
-                    <div class="field">
-                      <label for="" class="checkbox">
-                        <input type="checkbox">
-                       Remember me
-                      </label>
-                    </div>
+                <div class="field">
+                    <label for="rememberme" class="checkbox">
+                        <input id="rememberme" type="checkbox">
+                        Remember me
+                    </label>
+                </div>
                 <div class="field">
                     <button class="button is-success" type="submit">Log in</button>
                 </div>
