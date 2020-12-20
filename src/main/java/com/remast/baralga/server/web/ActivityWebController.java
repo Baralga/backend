@@ -43,9 +43,10 @@ public class ActivityWebController {
         model.addAttribute("nextFilter", activitiesFilter.next());
 
         var activities = activityService.read(activitiesFilter.map());
-        model.addAttribute("activities", activities.getFirst());
-        model.addAttribute("projects", activities.getSecond().stream()
+        model.addAttribute("activities", activities.getActivities());
+        model.addAttribute("projects", activities.getProjects().stream()
                 .collect(Collectors.toMap(Project::getId, p -> p)));
+        model.addAttribute("totalDuration", activities.getTotalDuration());
         return "index";
     }
 

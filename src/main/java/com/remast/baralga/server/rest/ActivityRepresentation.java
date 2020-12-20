@@ -41,12 +41,15 @@ public class ActivityRepresentation extends RepresentationModel<ActivityRepresen
     @JsonIgnore
     private String projectId;
 
+    private DurationRepresentation duration;
+
     public ActivityRepresentation(Activity activity, Principal principal, boolean isAdmin) {
         id = activity.getId();
         description = activity.getDescription();
         start = activity.getStart();
         end = activity.getEnd();
         projectId = activity.getProjectId();
+        duration = new DurationRepresentation(activity.getDuration());
 
         add(linkTo(methodOn(ActivityRestController.class).getById(id, null, null))
                 .withSelfRel());
@@ -79,6 +82,29 @@ public class ActivityRepresentation extends RepresentationModel<ActivityRepresen
                 end,
                 projectId
         );
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class DurationRepresentation extends RepresentationModel<DurationRepresentation> {
+
+        private int hours;
+
+        private int minutes;
+
+        private double decimal;
+
+        private String formatted;
+
+        public DurationRepresentation(Activity.ActivityDuration duration) {
+            hours = duration.hours();
+            minutes = duration.minutes();
+            decimal = duration.decimal();
+            formatted = duration.toString();
+        }
+
     }
 
 }

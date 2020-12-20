@@ -64,8 +64,8 @@ public class ActivityRestController {
         var isAdmin = request.isUserInRole("ROLE_ADMIN");
 
         return HalModelBuilder.halModel()
-                .embed(activities.getFirst().stream().map(a -> new ActivityRepresentation(a, principal, isAdmin)).collect(Collectors.toList()))
-                .embed(activities.getSecond().stream().map(p -> new ProjectRepresentation(p, isAdmin)).collect(Collectors.toList()))
+                .embed(activities.getActivities().stream().map(a -> new ActivityRepresentation(a, principal, isAdmin)).collect(Collectors.toList()))
+                .embed(activities.getProjects().stream().map(p -> new ProjectRepresentation(p, isAdmin)).collect(Collectors.toList()))
                 .link(linkTo(methodOn(ActivityRestController.class).create( null, null, null)).withRel("create"))
                 .build();
     }

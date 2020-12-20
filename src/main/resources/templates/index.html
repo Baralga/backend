@@ -73,6 +73,7 @@
         <div th:if="${#lists.isEmpty(activities)}" class="notification is-warning">
             No activities in period.
         </div>
+
         <div class="card" th:title="${activity.description}" th:each="activity: ${activities}">
             <header class="card-header">
                 <p class="card-header-title" th:text="${#temporals.format(activity.start, 'dd/MM/yyyy')}"></p>
@@ -85,10 +86,11 @@
             <div class="card-content">
                 <div class="content">
                     <div class="columns is-mobile">
-                        <div class="column is-5" th:text="${projects[activity.projectId].title}"></div>
+                        <div class="column is-4" th:text="${projects[activity.projectId].title}"></div>
                         <div class="column is-4"
                              th:text="${#temporals.format(activity.start, 'HH:mm')} + ' - ' + ${#temporals.format(activity.end, 'HH:mm')}"></div>
-                        <div class="column is-3" sec:authorize="hasRole('ADMIN')" th:text="${activity.user}"></div>
+                        <div class="column is-2" sec:authorize="hasRole('ADMIN')" th:text="${activity.user}"></div>
+                        <div class="column is-2 nowrap" th:text="${activity.duration}"></div>
                     </div>
                 </div>
             </div>
@@ -98,6 +100,18 @@
             </footer>
             -->
         </div>
+
+        <div th:unless="${#lists.isEmpty(activities)}" class="card">
+            <header class="card-header">
+                <div class="card-header-title columns is-mobile">
+                    <div class="column is-6"></div>
+                    <div class="column is-3">Total:</div>
+                    <div class="column is-3 nowrap" th:text="${totalDuration}">
+                    </div>
+                </div>
+            </header>
+        </div>
+
     </div>
 
 </div>

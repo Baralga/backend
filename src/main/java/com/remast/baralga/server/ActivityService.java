@@ -58,7 +58,7 @@ public class ActivityService {
         activityRepository.deleteById(id);
     }
 
-    public Pair<List<Activity>, List<Project>> read(final ActivityFilter activityFilter) {
+    public Activities read(final ActivityFilter activityFilter) {
         var activities = new ArrayList<Activity>();
         if (activityFilter.getStart() != null && activityFilter.getEnd() != null) {
             var startDate = convertToDateViaInstant(activityFilter.getStart());
@@ -84,7 +84,7 @@ public class ActivityService {
         return enrichWithProjects(activities);
     }
 
-    private Pair<List<Activity>, List<Project>> enrichWithProjects(List<Activity> activities) {
+    private Activities enrichWithProjects(List<Activity> activities) {
         var projects = new ArrayList<Project>();
         var projectsIterable = projectRepository.findAllById(
                 activities.stream()
@@ -93,7 +93,7 @@ public class ActivityService {
         );
         projectsIterable.forEach(projects::add);
 
-        return Pair.of(activities, projects);
+        return Activities.of(activities, projects);
     }
 
     private Date convertToDateViaInstant(LocalDateTime dateToConvert) {
