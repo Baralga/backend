@@ -72,7 +72,7 @@ public class ActivityRepresentation extends RepresentationModel<ActivityRepresen
 
     public Activity map() {
         var projectLink = getLink("project").orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing project relation."));
-        var projectId = projectLink.getHref().substring(projectLink.getHref().lastIndexOf("/") + 1);
+        var projectLinkId = projectLink.getHref().substring(projectLink.getHref().lastIndexOf("/") + 1);
 
         return new Activity(
                 id,
@@ -80,7 +80,7 @@ public class ActivityRepresentation extends RepresentationModel<ActivityRepresen
                 description,
                 start,
                 end,
-                projectId
+                projectLinkId
         );
     }
 

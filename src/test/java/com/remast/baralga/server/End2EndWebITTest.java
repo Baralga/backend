@@ -30,7 +30,7 @@ class End2EndWebITTest extends AbstractEnd2EndTest {
     private MockMvc mockMvc;
 
     @Test
-    public void loginAvailableForAll() throws Exception {
+    void loginAvailableForAll() throws Exception {
         // Arrange
 
         // Act
@@ -41,7 +41,7 @@ class End2EndWebITTest extends AbstractEnd2EndTest {
     }
 
     @Test
-    public void loginUser() throws Exception {
+    void loginUser() throws Exception {
         // Arrange
 
         // Act

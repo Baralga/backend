@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ActivitiesTest {
+class ActivitiesTest {
 
     @Test
     void create() {

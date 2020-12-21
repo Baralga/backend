@@ -25,7 +25,7 @@ class ActivityTest {
         assertThat(duration.hours()).isEqualTo(1);
         assertThat(duration.minutes()).isEqualTo(30);
         assertThat(duration.decimal()).isEqualTo(1.5);
-        assertThat(duration.toString()).isEqualTo("1:30 h");
+        assertThat(duration).hasToString("1:30 h");
     }
 
 }

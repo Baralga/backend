@@ -24,11 +24,11 @@ class ActivityModelTest {
         var activityModel = new ActivityModel(activity);
 
         // Assert
-        assertThat(activity.getId()).isEqualTo(activityModel.getId());
-        assertThat(activity.getDescription()).isEqualTo(activityModel.getDescription());
-        assertThat("01/10/2020").isEqualTo(activityModel.getDay());
-        assertThat("10:00").isEqualTo(activityModel.getStartTime());
-        assertThat("11:30").isEqualTo(activityModel.getEndTime());
+        assertThat(activityModel.getId()).isEqualTo(activity.getId());
+        assertThat(activityModel.getDescription()).isEqualTo(activity.getDescription());
+        assertThat(activityModel.getDay()).isEqualTo("01/10/2020");
+        assertThat(activityModel.getStartTime()).isEqualTo("10:00");
+        assertThat(activityModel.getEndTime()).isEqualTo("11:30");
     }
 
     @Test
@@ -65,10 +65,10 @@ class ActivityModelTest {
         var activity = activityModel.map();
 
         // Assert
-        assertThat(activityModel.getId()).isEqualTo(activity.getId());
-        assertThat(activityModel.getDescription()).isEqualTo(activity.getDescription());
-        assertThat(LocalDateTime.of(2020, 10, 1, 10, 0)).isEqualTo(activity.getStart());
-        assertThat(LocalDateTime.of(2020, 10, 1, 11, 30)).isEqualTo(activity.getEnd());
+        assertThat(activity.getId()).isEqualTo(activityModel.getId());
+        assertThat(activity.getDescription()).isEqualTo(activityModel.getDescription());
+        assertThat(activity.getStart()).isEqualTo(LocalDateTime.of(2020, 10, 1, 10, 0));
+        assertThat(activity.getEnd()).isEqualTo(LocalDateTime.of(2020, 10, 1, 11, 30));
     }
 
     @Test
