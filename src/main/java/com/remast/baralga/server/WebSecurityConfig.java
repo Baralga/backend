@@ -39,7 +39,7 @@ public class WebSecurityConfig {
             http.antMatcher("/api/**").authorizeRequests()
                     .anyRequest().authenticated().and()
                     .httpBasic().realmName("Baralga").and()
-                    .csrf().disable();
+                    .csrf().disable(); // NOSONAR
         }
 
     }

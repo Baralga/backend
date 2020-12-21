@@ -33,7 +33,7 @@ public class ActivityWebController {
     @GetMapping("/")
     public String showHome(Model model, HttpServletRequest request, Principal principal) {
         var activitiesFilter = ActivitiesFilterWeb.of(request);
-        if (!request.isUserInRole("ROLE_ADMIN")) {
+        if (!request.isUserInRole("ROLE_ADMIN")) { // NOSONAR
             activitiesFilter.setUser(principal.getName());
         }
 
@@ -83,7 +83,7 @@ public class ActivityWebController {
             return "redirect:/"; // NOSONAR
         }
 
-        var isAdmin = request.isUserInRole("ROLE_ADMIN");
+        var isAdmin = request.isUserInRole("ROLE_ADMIN"); // NOSONAR
         if (!isAdmin && !activity.get().getUser().equals(principal.getName())) {
             return "redirect:/"; // NOSONAR
         }
@@ -98,7 +98,7 @@ public class ActivityWebController {
         if (bindingResult.hasErrors()) {
             return "redirect:/activities/" + id; // NOSONAR
         }
-        activityService.update(activityModel.map(), principal, request.isUserInRole("ROLE_ADMIN"));
+        activityService.update(activityModel.map(), principal, request.isUserInRole("ROLE_ADMIN")); // NOSONAR
         return "redirect:/"; // NOSONAR
     }
 

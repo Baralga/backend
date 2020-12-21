@@ -63,7 +63,7 @@ public class ProjectRestController {
     @GetMapping
     public PagedModel<ProjectRepresentation> get(@RequestParam(required = false) Boolean active, HttpServletRequest request, @SortDefault(sort = "title",
             direction = Sort.Direction.ASC) Pageable pageable) {
-        var isAdmin = request.isUserInRole("ROLE_ADMIN");
+        var isAdmin = request.isUserInRole("ROLE_ADMIN"); // NOSONAR
 
         Page<Project> projects;
         if (active != null) {
@@ -105,7 +105,12 @@ public class ProjectRestController {
             return ResponseEntity.notFound().build();
         }
         project.setId(id);
-        return ResponseEntity.ok().body(new ProjectRepresentation(projectRepository.save(project.map()), request.isUserInRole("ROLE_ADMIN")));
+
+        var projectRepresentation = new ProjectRepresentation(
+                projectRepository.save(project.map()),
+                request.isUserInRole("ROLE_ADMIN") // NOSONAR
+        );
+        return ResponseEntity.ok().body(projectRepresentation);
     }
 
 }
