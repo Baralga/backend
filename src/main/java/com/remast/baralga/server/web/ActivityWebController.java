@@ -80,12 +80,12 @@ public class ActivityWebController {
     public String editActivity(@PathVariable final String id, Model model, HttpServletRequest request, Principal principal) {
         var activity = activityRepository.findById(id);
 
-        var isAdmin = request.isUserInRole("ROLE_ADMIN");
-        if (!isAdmin && !activity.get().getUser().equals(principal.getName())) {
+        if (activity.isEmpty()) {
             return "redirect:/";
         }
 
-        if (activity.isEmpty()) {
+        var isAdmin = request.isUserInRole("ROLE_ADMIN");
+        if (!isAdmin && !activity.get().getUser().equals(principal.getName())) {
             return "redirect:/";
         }
         model.addAttribute("projects", projectRepository.findAllByActive(true, PageRequest.of(0, 50)));

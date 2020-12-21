@@ -63,7 +63,7 @@ public class Activity {
         }
 
         public int hours() {
-            return Long.valueOf(duration.toHours()).intValue();
+            return (int) duration.toHours();
         }
 
         public int minutes() {
