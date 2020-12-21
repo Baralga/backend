@@ -14,7 +14,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -80,6 +82,36 @@ class End2EndWebITTest extends AbstractEnd2EndTest {
         // Assert
         resultActions.andExpect(status().isFound())
                 .andExpect(header().string("Location", "/projects"));
+    }
+
+    @WithMockUser(value = "admin", authorities = "ROLE_ADMIN")
+    @Test
+    void showDeleteProject() throws Exception {
+        // Arrange
+        var projectId = INITIAL_PROJECT_ID;
+
+        // Act
+        var resultActions = mockMvc.perform(get("/projects/" + projectId + "/delete"));
+
+        // Assert
+        resultActions.andExpect(status().isOk());
+    }
+
+    @WithMockUser(value = "admin", authorities = "ROLE_ADMIN")
+    @Test
+    void deleteProject() throws Exception {
+        // Arrange
+        var projectId = arrangeProject();
+        var activityId = arrangeActivity(projectId);
+
+        // Act
+        var resultActions = mockMvc.perform(post("/projects/" + projectId + "/delete").with(csrf())
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED));
+
+        // Assert
+        resultActions.andExpect(status().isFound());
+        var activityResponse = executeRequest(GET, "/api/activities/" + activityId);
+        assertThat(activityResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @WithMockUser(value = "user", authorities = "ROLE_USER")

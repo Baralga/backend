@@ -1,5 +1,6 @@
 package com.remast.baralga.server.rest;
 
+import com.remast.baralga.server.ActivityRepository;
 import com.remast.baralga.server.Project;
 import com.remast.baralga.server.ProjectRepository;
 import com.remast.baralga.server.ProjectService;
@@ -34,6 +35,8 @@ public class ProjectRestController {
 
     private final @NonNull ProjectRepository projectRepository;
 
+    private final @NonNull ActivityRepository activityRepository;
+
     @Transactional(readOnly = true)
     @GetMapping(path = "/{id}")
     public ResponseEntity<ProjectRepresentation> getById(@PathVariable String id, HttpServletRequest request) {
@@ -51,6 +54,7 @@ public class ProjectRestController {
         if (project.isEmpty()) {
             return ResponseEntity.ok().build();
         }
+        activityRepository.deleteByProjectId(id);
         projectRepository.deleteById(id);
         return ResponseEntity.ok().build();
     }
