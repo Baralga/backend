@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ActivitiesTest {
+class CollectedActivitiesTest {
 
     @Test
     void create() {
@@ -26,7 +26,7 @@ class ActivitiesTest {
                 .build();
 
         // Act
-        var activities = Activities.of(Arrays.asList(activity1, activity2), null);
+        var activities = CollectedActivities.of(Arrays.asList(activity1, activity2), null);
 
         // Assert
         assertThat(activities.getTotalDuration().decimal()).isEqualTo(1.5d);
@@ -50,7 +50,7 @@ class ActivitiesTest {
                 .build();
 
         // Act
-        var activities = Activities.of(Arrays.asList(activity1, activity2), null);
+        var activities = CollectedActivities.of(Arrays.asList(activity1, activity2), null);
 
         // Assert
         assertThat(activities.getTotalDuration().decimal()).isEqualTo(28.0);

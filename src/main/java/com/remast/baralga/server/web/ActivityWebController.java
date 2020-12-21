@@ -43,7 +43,7 @@ public class ActivityWebController {
 
         var activities = activityService.read(activitiesFilter.map());
         model.addAttribute("activities", activities.getActivities());
-        model.addAttribute("projects", activities.getProjects().stream()
+        model.addAttribute("projects", activities.getProjects().stream() // NOSONAR
                 .collect(Collectors.toMap(Project::getId, p -> p)));
         model.addAttribute("totalDuration", activities.getTotalDuration());
         return "index"; // NOSONAR
@@ -53,7 +53,7 @@ public class ActivityWebController {
     @GetMapping("/activities/new")
     public String newActivity(Model model, HttpServletRequest request, Principal principal) {
         var projects = projectRepository.findAllByActive(true, PageRequest.of(0, 50));
-        model.addAttribute("projects", projects);
+        model.addAttribute("projects", projects); // NOSONAR
         model.addAttribute("activity", new ActivityModel(projects.get(0)));
         return "activityNew"; // NOSONAR
     }

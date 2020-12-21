@@ -81,8 +81,9 @@ class ActivityModelTest {
         var errors = activityModel.validateDates();
 
         // Assert
-        assertThat(errors).isNotNull();
-        assertThat(errors).hasSize(0);
+        assertThat(errors)
+                .isNotNull()
+                .isEmpty();
     }
 
     @Test
@@ -96,8 +97,9 @@ class ActivityModelTest {
         var errors = activityModel.validateDates();
 
         // Assert
-        assertThat(errors).isNotNull();
-        assertThat(errors).hasSize(1);
+        assertThat(errors)
+                .isNotNull()
+                .hasSize(1);
         assertThat(errors.get(0).getObjectName()).isEqualTo("day");
     }
 
@@ -112,8 +114,9 @@ class ActivityModelTest {
         var errors = activityModel.validateDates();
 
         // Assert
-        assertThat(errors).isNotNull();
-        assertThat(errors).hasSize(1);
+        assertThat(errors)
+                .isNotNull()
+                .hasSize(1);
         assertThat(errors.get(0).getObjectName()).isEqualTo("startTime");
     }
 
@@ -128,8 +131,9 @@ class ActivityModelTest {
         var errors = activityModel.validateDates();
 
         // Assert
-        assertThat(errors).isNotNull();
-        assertThat(errors).hasSize(1);
+        assertThat(errors)
+                .isNotNull()
+                .hasSize(1);
         assertThat(errors.get(0).getObjectName()).isEqualTo("endTime");
     }
 

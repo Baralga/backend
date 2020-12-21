@@ -40,12 +40,12 @@ public class ActivityRestController {
         if (activity.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(new ActivityRepresentation(activity.get(), principal, request.isUserInRole("ROLE_ADMIN")));
+        return ResponseEntity.ok(new ActivityRepresentation(activity.get(), principal, request.isUserInRole("ROLE_ADMIN"))); // NOSONAR
     }
 
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<ActivityRepresentation> delete(@PathVariable String id, HttpServletRequest request, Principal principal) {
-        activityService.deleteById(id, principal, request.isUserInRole("ROLE_ADMIN"));
+        activityService.deleteById(id, principal, request.isUserInRole("ROLE_ADMIN")); // NOSONAR
         return ResponseEntity.ok().build();
     }
 
@@ -61,7 +61,7 @@ public class ActivityRestController {
                 .build();
 
         var activities = activityService.read(activitiesFilter);
-        var isAdmin = request.isUserInRole("ROLE_ADMIN");
+        var isAdmin = request.isUserInRole("ROLE_ADMIN"); // NOSONAR
 
         return HalModelBuilder.halModel()
                 .embed(activities.getActivities().stream().map(a -> new ActivityRepresentation(a, principal, isAdmin)).collect(Collectors.toList()))
@@ -77,7 +77,7 @@ public class ActivityRestController {
                 .path("/{id}")
                 .buildAndExpand(activity.getId())
                 .toUri();
-        return ResponseEntity.created(href).body(new ActivityRepresentation(activity, principal, request.isUserInRole("ROLE_ADMIN")));
+        return ResponseEntity.created(href).body(new ActivityRepresentation(activity, principal, request.isUserInRole("ROLE_ADMIN"))); // NOSONAR
     }
 
     @PatchMapping(path = "/{id}")

@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Activities {
+public class CollectedActivities {
 
     private List<Activity> activities;
 
@@ -20,7 +20,7 @@ public class Activities {
 
     private Activity.ActivityDuration totalDuration;
 
-    private Activities(List<Activity> activities, List<Project> projects) {
+    private CollectedActivities(List<Activity> activities, List<Project> projects) {
         this.activities = activities;
         this.projects = projects;
 
@@ -32,8 +32,8 @@ public class Activities {
                 .forEach(this.totalDuration::add);
     }
 
-    public static Activities of(List<Activity> activities, List<Project> projects) {
-        return new Activities(activities, projects);
+    public static CollectedActivities of(List<Activity> activities, List<Project> projects) {
+        return new CollectedActivities(activities, projects);
     }
 
 }
