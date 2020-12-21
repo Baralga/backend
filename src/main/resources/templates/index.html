@@ -8,6 +8,20 @@
 <body>
 
 <div class="columns is-multiline" layout:fragment="content">
+
+    <div class="column is-12">
+        <div class="buttons">
+            <a th:href="@{/activities/new}"
+               class="button is-link"
+               up-target="body">
+                <span class="icon">
+                    <i class="fas fa-plus"></i>
+                </span>
+                <span>Add Activity</span>
+            </a>
+        </div>
+    </div>
+
     <div class="column is-12">
         <nav class="level" id="b__activities_filter">
             <div class="level-left">
