@@ -185,9 +185,9 @@ public class ActivitiesFilterWeb {
             case DAY:
                 return DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.ENGLISH).format(start);
             case MONTH:
-                return DateTimeFormatter.ofPattern("MMMM", Locale.ENGLISH).format(start);
+                return DateTimeFormatter.ofPattern("MMMM yyyy", Locale.ENGLISH).format(start);
             case YEAR:
-                return DateTimeFormatter.ofPattern("YYYY", Locale.ENGLISH).format(start);
+                return DateTimeFormatter.ofPattern("yyyy", Locale.ENGLISH).format(start);
         }
         throw new IllegalStateException("Timespan " + timespan + " not supported."); // NOSONAR
     }
