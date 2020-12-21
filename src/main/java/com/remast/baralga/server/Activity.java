@@ -12,7 +12,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Data
 @Builder
@@ -42,6 +44,43 @@ public class Activity {
     private LocalDateTime end;
 
     @Column("project_id")
-    private String projectRef;
+    private String projectId;
+
+    public ActivityDuration getDuration() {
+        return ActivityDuration.of(start, end);
+    }
+
+    public static class ActivityDuration {
+
+        private Duration duration;
+
+        public static ActivityDuration of(LocalDateTime start, LocalDateTime end) {
+            return new ActivityDuration(start, end);
+        }
+
+        private ActivityDuration(LocalDateTime start, LocalDateTime end) {
+            this.duration = Duration.between(start, end);
+        }
+
+        public int hours() {
+            return Long.valueOf(duration.toHours()).intValue();
+        }
+
+        public int minutes() {
+            return duration.toMinutesPart();
+        }
+
+        public double decimal() {
+            return duration.toMinutes() / 60.0;
+        }
+
+        public String toString()  {
+            return String.format("%d:%02d h", hours(), minutes());
+        }
+
+        public void add(Activity.ActivityDuration duration) {
+            this.duration = this.duration.plus(duration.duration);
+        }
+    }
 
 }

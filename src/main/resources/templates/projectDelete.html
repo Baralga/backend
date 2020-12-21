@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Projects</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+
+    <h1 class="title is-1">Delete Project <span th:text="${project.title}"></span></h1>
+
+    <div class="columns is-multiline">
+
+        <div class="column is-12">
+            <p>Do you really want to delete the project?</p>
+        </div>
+
+        <div class="column is-12" th:if="${dependingActivitiesCount > 0}">
+            <article class="message is-warning">
+                <div class="message-body">
+                    Deleting the project will delete
+                    <strong th:text="${dependingActivitiesCount}"></strong>
+                    activities you have tracked for that project.
+                </div>
+            </article>
+        </div>
+
+        <form th:action="@{'/projects/' + ${project.id} + '/delete'}" th:object="${project}" method="POST" up-target="body">
+            <div class="column is-12">
+                <div class="field is-grouped">
+                    <p class="control">
+                        <button class="button is-success"
+                                type="submit">Delete</button>
+                        <button class="button"
+                                type="submit"
+                                name="cancel"
+                                value="cancel">Cancel</button>
+                    </p>
+                </div>
+            </div>
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>

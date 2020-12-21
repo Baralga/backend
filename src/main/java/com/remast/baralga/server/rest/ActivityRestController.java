@@ -5,6 +5,8 @@ import com.remast.baralga.server.ActivityRepository;
 import com.remast.baralga.server.ActivityService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.mediatype.hal.HalModelBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -13,9 +15,10 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.fromController;
 
 @Transactional
@@ -48,7 +51,7 @@ public class ActivityRestController {
 
     @Transactional(readOnly = true)
     @GetMapping
-    public ActivitiesRepresentation get(@RequestParam(name = "start", required = false) String startParam, @RequestParam(name = "end", required = false) String endParam, HttpServletRequest request, Principal principal) {
+    public RepresentationModel<ActivityRepresentation> get(@RequestParam(name = "start", required = false) String startParam, @RequestParam(name = "end", required = false) String endParam, HttpServletRequest request, Principal principal) {
         var start = startParam != null ? LocalDate.parse(startParam, DATE_FORMAT).atStartOfDay() : null;
         var end = endParam != null ? LocalDate.parse(endParam, DATE_FORMAT).atStartOfDay() : null;
         var activitiesFilter = ActivityFilter.builder()
@@ -60,9 +63,10 @@ public class ActivityRestController {
         var activities = activityService.read(activitiesFilter);
         var isAdmin = request.isUserInRole("ROLE_ADMIN");
 
-        return ActivitiesRepresentation.builder()
-                .data(activities.getFirst().stream().map(a -> new ActivityRepresentation(a, principal, isAdmin)).collect(Collectors.toList()))
-                .projectRefs(activities.getSecond().stream().map(p -> new ProjectRepresentation(p, isAdmin)).collect(Collectors.toList()))
+        return HalModelBuilder.halModel()
+                .embed(activities.getActivities().stream().map(a -> new ActivityRepresentation(a, principal, isAdmin)).collect(Collectors.toList()))
+                .embed(activities.getProjects().stream().map(p -> new ProjectRepresentation(p, isAdmin)).collect(Collectors.toList()))
+                .link(linkTo(methodOn(ActivityRestController.class).create( null, null, null)).withRel("create"))
                 .build();
     }
 

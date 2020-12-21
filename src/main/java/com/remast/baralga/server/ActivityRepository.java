@@ -1,5 +1,6 @@
 package com.remast.baralga.server;
 
+import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
 
@@ -16,5 +17,11 @@ public interface ActivityRepository extends CrudRepository<Activity, String> {
 
     @Query("SELECT * FROM activity WHERE :start <= start_time and start_time < :end order by start_time desc")
     Iterable<Activity> findByIntervalOrderByStart(Date start, Date end);
+
+    Long countAllByProjectId(String projectId);
+
+    @Modifying
+    @Query("DELETE FROM activity WHERE :projectId = project_id")
+    void deleteByProjectId(String projectId);
 
 }

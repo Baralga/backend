@@ -1,5 +1,6 @@
 package com.remast.baralga.server.rest;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -10,7 +11,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.hateoas.RepresentationModel;
-import org.springframework.security.access.AccessDeniedException;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
@@ -36,21 +38,30 @@ public class ActivityRepresentation extends RepresentationModel<ActivityRepresen
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime end;
 
-    private String projectRef;
+    @JsonIgnore
+    private String projectId;
+
+    private DurationRepresentation duration;
 
     public ActivityRepresentation(Activity activity, Principal principal, boolean isAdmin) {
         id = activity.getId();
         description = activity.getDescription();
         start = activity.getStart();
         end = activity.getEnd();
-        projectRef = activity.getProjectRef();
+        projectId = activity.getProjectId();
+        duration = new DurationRepresentation(activity.getDuration());
 
         add(linkTo(methodOn(ActivityRestController.class).getById(id, null, null))
                 .withSelfRel());
 
+        add(linkTo(methodOn(ProjectRestController.class).getById(projectId, null))
+                .withRel("project"));
+
         if (!isAdmin && !principal.getName().equals(activity.getUser())) {
             return;
         }
+
+        // Links for admins only
 
         add(linkTo(methodOn(ActivityRestController.class).delete(id, null, null))
                 .withRel("delete"));
@@ -60,14 +71,40 @@ public class ActivityRepresentation extends RepresentationModel<ActivityRepresen
     }
 
     public Activity map() {
+        var projectLink = getLink("project").orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing project relation."));
+        var projectId = projectLink.getHref().substring(projectLink.getHref().lastIndexOf("/") + 1);
+
         return new Activity(
                 id,
                 null,
                 description,
                 start,
                 end,
-                projectRef
+                projectId
         );
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class DurationRepresentation extends RepresentationModel<DurationRepresentation> {
+
+        private int hours;
+
+        private int minutes;
+
+        private double decimal;
+
+        private String formatted;
+
+        public DurationRepresentation(Activity.ActivityDuration duration) {
+            hours = duration.hours();
+            minutes = duration.minutes();
+            decimal = duration.decimal();
+            formatted = duration.toString();
+        }
+
     }
 
 }

@@ -24,7 +24,7 @@ public class ProjectModel {
     @Size(max = 500)
     private String description;
 
-    private Boolean active;
+    private Boolean active = true;
 
     public ProjectModel(final Project project) {
         id = project.getId();
