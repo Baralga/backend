@@ -45,11 +45,11 @@ public class ProjectWebController {
     public String showDeleteProject(@PathVariable final String id, Model model) {
         var project =  projectRepository.findById(id);
         if (project.isEmpty()) {
-            return "redirect:/projects";
+            return "redirect:/projects"; // NOSONAR
         }
         model.addAttribute("project", project.get());
         model.addAttribute("dependingActivitiesCount", activityRepository.countAllByProjectId(project.get().getId()));
-        return "projectDelete";
+        return "projectDelete"; // NOSONAR
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -57,11 +57,11 @@ public class ProjectWebController {
     public String deleteProject(@PathVariable final String id, Model model) {
         var project =  projectRepository.findById(id);
         if (project.isEmpty()) {
-            return "redirect:/projects";
+            return "redirect:/projects"; // NOSONAR
         }
         activityRepository.deleteByProjectId(id);
         projectRepository.deleteById(id);
-        return "redirect:/projects";
+        return "redirect:/projects"; // NOSONAR
     }
 
     @Transactional(readOnly = true)
@@ -74,10 +74,10 @@ public class ProjectWebController {
     @PostMapping("/projects")
     public String createProject(@Valid ProjectModel project, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return "redirect:/projects";
+            return "redirect:/projects"; // NOSONAR
         }
         projectService.create(project.map());
-        return "redirect:/projects";
+        return "redirect:/projects"; // NOSONAR
     }
 
 }

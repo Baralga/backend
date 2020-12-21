@@ -14,7 +14,6 @@ import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
 @Data
 @Builder

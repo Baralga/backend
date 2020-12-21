@@ -47,7 +47,7 @@ public class ActivityWebController {
         model.addAttribute("projects", activities.getProjects().stream()
                 .collect(Collectors.toMap(Project::getId, p -> p)));
         model.addAttribute("totalDuration", activities.getTotalDuration());
-        return "index";
+        return "index"; // NOSONAR
     }
 
     @Transactional(readOnly = true)
@@ -56,23 +56,23 @@ public class ActivityWebController {
         var projects = projectRepository.findAllByActive(true, PageRequest.of(0, 50));
         model.addAttribute("projects", projects);
         model.addAttribute("activity", new ActivityModel(projects.get(0)));
-        return "activityNew";
+        return "activityNew"; // NOSONAR
     }
 
     @PostMapping("/activities/new")
     public String createActivity(@Valid ActivityModel activityModel, BindingResult bindingResult, Principal principal) {
-        activityModel.validateDates().stream().forEach(e -> bindingResult.addError(e));
+        activityModel.validateDates().stream().forEach(bindingResult::addError);
         if (bindingResult.hasErrors()) {
-            return "redirect:/activities/new";
+            return "redirect:/activities/new"; // NOSONAR
         }
         activityService.create(activityModel.map(), principal);
-        return "redirect:/";
+        return "redirect:/"; // NOSONAR
     }
 
     @Transactional(readOnly = true)
     @PostMapping(path = "/activities/new", params = "cancel")
     public String createActivityCancel() {
-        return "redirect:/";
+        return "redirect:/"; // NOSONAR
     }
 
     @Transactional(readOnly = true)
@@ -81,32 +81,32 @@ public class ActivityWebController {
         var activity = activityRepository.findById(id);
 
         if (activity.isEmpty()) {
-            return "redirect:/";
+            return "redirect:/"; // NOSONAR
         }
 
         var isAdmin = request.isUserInRole("ROLE_ADMIN");
         if (!isAdmin && !activity.get().getUser().equals(principal.getName())) {
-            return "redirect:/";
+            return "redirect:/"; // NOSONAR
         }
         model.addAttribute("projects", projectRepository.findAllByActive(true, PageRequest.of(0, 50)));
         model.addAttribute("activity", new ActivityModel(activity.get()));
-        return "activityEdit";
+        return "activityEdit"; // NOSONAR
     }
 
     @PostMapping("/activities/{id}")
     public String updateActivity(@PathVariable final String id, @Valid ActivityModel activityModel, BindingResult bindingResult, HttpServletRequest request, Principal principal) {
-        activityModel.validateDates().stream().forEach(e -> bindingResult.addError(e));
+        activityModel.validateDates().stream().forEach(bindingResult::addError);
         if (bindingResult.hasErrors()) {
-            return "redirect:/activities/" + id;
+            return "redirect:/activities/" + id; // NOSONAR
         }
         activityService.update(activityModel.map(), principal, request.isUserInRole("ROLE_ADMIN"));
-        return "redirect:/";
+        return "redirect:/"; // NOSONAR
     }
 
     @Transactional(readOnly = true)
     @PostMapping(path = "/activities/{id}", params = "cancel")
     public String updateActivityCancel(@PathVariable final String id) {
-        return "redirect:/";
+        return "redirect:/"; // NOSONAR
     }
 
 }
