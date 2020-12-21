@@ -80,7 +80,7 @@ public class ProjectRestController {
         );
 
         if (isAdmin) {
-            pageModel.add(linkTo(methodOn(ProjectRestController.class).create( null, null)).withRel("create"));
+            pageModel.add(linkTo(methodOn(ProjectRestController.class).create(null, null)).withRel("create"));
         }
 
         return pageModel;
@@ -88,13 +88,14 @@ public class ProjectRestController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
-    public ResponseEntity<ProjectRepresentation> create(@RequestBody ProjectRepresentation projectRepresentation, HttpServletRequest request) {
-        var project = projectService.create(projectRepresentation.map());
+    public ResponseEntity<ProjectRepresentation> create(@RequestBody ProjectRepresentation projectRepresentationBody, HttpServletRequest request) {
+        var project = projectService.create(projectRepresentationBody.map());
         var href = fromController(ProjectRestController.class)
                 .path("/{id}")
                 .buildAndExpand(project.getId())
                 .toUri();
-        return ResponseEntity.created(href).body(new ProjectRepresentation(project, request.isUserInRole("ROLE_ADMIN")));
+        var projectRepresentation = new ProjectRepresentation(project, request.isUserInRole("ROLE_ADMIN")); // NOSONAR
+        return ResponseEntity.created(href).body(projectRepresentation);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
