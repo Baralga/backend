@@ -46,9 +46,9 @@
             </a>
             <div class="navbar-item">
                 <div class="buttons">
-                    <a th:href="@{/logout}" class="button is-light">
-                        Log out
-                    </a>
+                    <form th:action="@{/logout}" method="POST" up-target="body">
+                        <input type="submit" class="button is-light" value="Logout"></input>
+                    </form>
                 </div>
             </div>
         </div>
