@@ -8,6 +8,7 @@
 <body>
 
 <div class="columns is-multiline" layout:fragment="content">
+    <script defer th:utext="'history.replaceState(null, null, \'' + ${session.filter.toUrlParams()} + '\')'"></script>
 
     <div class="column is-12">
         <div class="buttons">
