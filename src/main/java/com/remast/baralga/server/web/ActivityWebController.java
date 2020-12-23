@@ -32,7 +32,13 @@ public class ActivityWebController {
     @Transactional(readOnly = true)
     @GetMapping("/")
     public String showHome(Model model, HttpServletRequest request, Principal principal) {
-        var activitiesFilter = ActivitiesFilterWeb.of(request);
+        ActivitiesFilterWeb activitiesFilter = ActivitiesFilterWeb.of(request);
+        if (request.getParameter("timespan") == null && request.getSession().getAttribute("filter") != null) {
+           activitiesFilter = (ActivitiesFilterWeb) request.getSession().getAttribute("filter");
+        } else {
+            request.getSession().setAttribute("filter", activitiesFilter);
+        }
+
         if (!request.isUserInRole("ROLE_ADMIN")) { // NOSONAR
             activitiesFilter.setUser(principal.getName());
         }

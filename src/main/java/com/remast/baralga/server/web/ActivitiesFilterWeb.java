@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Year;
@@ -18,7 +19,7 @@ import java.util.Locale;
 @Data
 @Builder
 @AllArgsConstructor
-public class ActivitiesFilterWeb {
+public class ActivitiesFilterWeb implements Serializable {
 
     private LocalDateTime start;
 
