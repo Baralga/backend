@@ -7,11 +7,14 @@ import com.remast.baralga.server.ProjectRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -52,6 +55,11 @@ public class ActivityWebController {
         model.addAttribute("projects", activities.getProjects().stream() // NOSONAR
                 .collect(Collectors.toMap(Project::getId, p -> p)));
         model.addAttribute("totalDuration", activities.getTotalDuration());
+
+        var projects = projectRepository.findAllByActive(true, PageRequest.of(0, 50));
+        model.addAttribute("projects", projects); // NOSONAR
+        model.addAttribute("activity", new ActivityModel(projects.get(0)));
+
         return "index"; // NOSONAR
     }
 
@@ -64,14 +72,21 @@ public class ActivityWebController {
         return "activityNew"; // NOSONAR
     }
 
+    @Transactional(readOnly = true)
+    @GetMapping("/activities/ping")
+    public ResponseEntity pingActivity() {
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/activities/new")
-    public String createActivity(@Valid ActivityModel activityModel, BindingResult bindingResult, Principal principal) {
+    public ModelAndView createActivity(@Valid ActivityModel activityModel, Model model, HttpServletRequest request, BindingResult bindingResult, Principal principal) {
         activityModel.validateDates().stream().forEach(bindingResult::addError);
         if (bindingResult.hasErrors()) {
-            return "redirect:/activities/new"; // NOSONAR
+            model.addAttribute("activity", activityModel);
+            return new ModelAndView("activityNew", HttpStatus.BAD_REQUEST); // NOSONAR
         }
         activityService.create(activityModel.map(), principal);
-        return "redirect:/"; // NOSONAR
+        return new ModelAndView("redirect:/"); // NOSONAR
     }
 
     @Transactional(readOnly = true)

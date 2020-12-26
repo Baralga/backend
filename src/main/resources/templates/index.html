@@ -10,6 +10,61 @@
 <div class="columns is-multiline" layout:fragment="content">
     <script defer th:utext="'history.replaceState(null, null, \'' + ${session.filter.toUrlParams()} + '\')'"></script>
 
+    <turbo-frame id="b__tracker">
+    <form class="column is-12 notification is-primary" data-controller="tracker" th:action="@{/activities/new}" method="POST" th:object="${activity}" data-turbo-frame="b__activities_list">
+
+        <input name="day" type="hidden"></input>
+        <input name="startTime" type="hidden"></input>
+        <input name="endTime" type="hidden"></input>
+
+
+        <div class="columns is-multiline">
+            <div class="column is-4">
+                <div class="button is-large" data-tracker-target="mode" data-action="click->tracker#start">
+                    <span class="icon is-medium">
+                        <i class="fa fa-play"></i>
+                    </span>
+                </div>
+                <div class="button is-large" data-tracker-target="mode" data-action="click->tracker#stop">
+                    <span class="icon is-medium">
+                        <i class="fa fa-stop"></i>
+                    </span>
+                </div>
+
+                <div class="control select is-large">
+                    <fieldset>
+                        <select th:field="*{projectId}">
+                            <option th:value="${project.id}" th:text="${project.title}" th:each="project: ${projects}"></option>
+                        </select>
+                    </fieldset>
+                </div>
+
+                <h3 class="title is-3">
+                    Start: <span data-tracker-target="start"></span>
+                    <br />
+                    Duration: <span data-tracker-target="duration"></span>
+                </h3>
+            </div>
+
+            <div class="column is-6">
+                    <div class="control">
+                        <fieldset>
+                            <textarea
+                                    th:field="*{description}"
+                                    class="textarea"
+                                    placeholder="Describe what you do ..." >
+                            </textarea>
+                        </fieldset>
+                    </div>
+
+            </div>
+
+
+
+        </div>
+    </form >
+    </turbo-frame>
+
     <div class="column is-12">
         <div class="buttons">
             <a th:href="@{/activities/new}"
@@ -84,7 +139,7 @@
         </nav>
     </div>
 
-    <div id="b__activities_list" class="column is-12">
+    <turbo-frame id="b__activities_list" class="column is-12">
         <div th:if="${#lists.isEmpty(activities)}" class="notification is-warning">
             No activities in period.
         </div>
@@ -92,7 +147,8 @@
         <div class="card" th:title="${activity.description}" th:each="activity: ${activities}">
             <header class="card-header">
                 <p class="card-header-title" th:text="${#temporals.format(activity.start, 'dd/MM/yyyy')}"></p>
-                <a th:href="@{/activities/{activityId}(activityId=${activity.id})}" class="card-header-icon" up-target="body">
+                <a th:href="@{/activities/{activityId}(activityId=${activity.id})}" class="card-header-icon" up-target="body"
+                   data-turbo-frame="_top">
                       <span class="icon">
                           <i class="fas fa-edit" aria-hidden="true"></i>
                       </span>
@@ -101,7 +157,8 @@
             <div class="card-content">
                 <div class="content">
                     <div class="columns is-mobile">
-                        <div class="column is-4" th:text="${projects[activity.projectId].title}"></div>
+                        <!--${projects[activity.projectId].title}-->
+                        <div class="column is-4" th:text="${activity.projectId}"></div>
                         <div class="column is-4"
                              th:text="${#temporals.format(activity.start, 'HH:mm')} + ' - ' + ${#temporals.format(activity.end, 'HH:mm')}"></div>
                         <div class="column is-2" sec:authorize="hasRole('ADMIN')" th:text="${activity.user}"></div>
@@ -127,7 +184,8 @@
             </header>
         </div>
 
-    </div>
+    </turbo-frame>
+
 
 </div>
 

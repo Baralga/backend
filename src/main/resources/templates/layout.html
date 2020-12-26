@@ -13,6 +13,90 @@
         import hotwiredTurbo from 'https://cdn.skypack.dev/@hotwired/turbo';
     </script>
 
+    <script src="https://cdn.jsdelivr.net/npm/@js-joda/core@1.11.0/dist/js-joda.js"></script>
+
+    <script src="https://unpkg.com/stimulus/dist/stimulus.umd.js"></script>
+    <script>
+    (() => {
+      const application = Stimulus.Application.start()
+
+      application.register("tracker", class extends Stimulus.Controller {
+        static get targets() {
+          return [ "name", "mode", "start", "duration" ]
+        }
+
+        updateTimer() {
+            this.index++;
+
+            let duration = JSJoda.Duration.between(this.startTime, JSJoda.LocalDateTime.now());
+
+            this.durationTarget.innerHTML = duration.toHours().toString().padStart(2, "0") + ":" + duration.toMinutes().toString().padStart(2, "0");
+
+            console.log("Upate timer!", duration.toString());
+            console.log("UPP", this.startTargets);
+
+            fetch("/activities/ping");
+        }
+
+        start() {
+        this.index = 0;
+        this.startTime = JSJoda.LocalDateTime.now();
+            console.log("Start, Stimulus!", this.element);
+            console.log("..............", this.modeTargets)
+
+            this.startTarget.innerHTML = this.startTime;
+
+            this.updateTimer();
+            this.updateTimerFunction = setInterval(() => {
+              this.updateTimer()
+            }, 5000);
+        }
+
+        stop() {
+            this.endTime = JSJoda.LocalDateTime.now();
+            console.log("Stop, Stimulus!", this.startTarget.innerHTML);
+            this.startTarget.innerHTML = "";
+            this.durationTarget.innerHTML = "";
+            clearInterval(this.updateTimerFunction);
+
+            console.log("Submitting!", this.element);
+
+            console.log("test3", this.element.querySelector("input[name='_csrf']"));
+
+            let crsf = this.element.querySelector("input[name='_csrf']").value;
+
+            let formData = new FormData();
+            formData.append('_csrf', crsf);
+            formData.append('day', this.startTime.format(JSJoda.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            formData.append('startTime', this.startTime.format(JSJoda.DateTimeFormatter.ofPattern("HH:mm")));
+            formData.append('endTime', this.endTime.format(JSJoda.DateTimeFormatter.ofPattern("HH:mm")));
+            formData.append('description', 'John123');
+            formData.append('projectId', 'John123');
+
+            this.element.querySelector("input[name='day']").value = this.startTime.format(JSJoda.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            this.element.querySelector("input[name='startTime']").value = this.startTime.format(JSJoda.DateTimeFormatter.ofPattern("HH:mm"));
+            this.element.querySelector("input[name='endTime']").value = this.endTime.format(JSJoda.DateTimeFormatter.ofPattern("HH:mm"));
+
+            this.element.requestSubmit();
+
+/**
+            fetch("/activities/new",
+                {
+                    body: formData,
+                    method: "POST"
+                });
+                **/
+        }
+
+        connect() {
+          console.log("Hello, Stimulus!", this.element)
+        }
+
+        // …
+      })
+    })()
+  </script>
+
 </head>
 <body>
 
