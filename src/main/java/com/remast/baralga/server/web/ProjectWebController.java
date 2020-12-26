@@ -81,7 +81,7 @@ public class ProjectWebController {
     public String createProject(@Valid ProjectModel projectModel, Model model, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
         var project = projectService.create(projectModel.map());
         model.addAttribute("project", project);
-        return "projectStreamAppend"; // NOSONAR
+        return "redirect:/projects"; // NOSONAR
     }
 
 }

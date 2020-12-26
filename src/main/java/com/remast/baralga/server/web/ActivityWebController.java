@@ -52,7 +52,7 @@ public class ActivityWebController {
 
         var activities = activityService.read(activitiesFilter.map());
         model.addAttribute("activities", activities.getActivities());
-        model.addAttribute("projects", activities.getProjects().stream() // NOSONAR
+        model.addAttribute("projectsById", activities.getProjects().stream() // NOSONAR
                 .collect(Collectors.toMap(Project::getId, p -> p)));
         model.addAttribute("totalDuration", activities.getTotalDuration());
 
