@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
+import org.springframework.http.CacheControl;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,6 +27,8 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.time.Duration;
+import java.util.stream.Collectors;
 
 @Transactional
 @Controller
@@ -39,10 +43,20 @@ public class ProjectWebController {
 
     @Transactional(readOnly = true)
     @GetMapping("/projects")
-    public String showProjects(Model model, @SortDefault(sort = "title", direction = Sort.Direction.ASC)  @PageableDefault(size = 50) Pageable pageable) {
+    public String showProjects(Model model, @SortDefault(sort = "title", direction = Sort.Direction.ASC)  @PageableDefault(size = 50) Pageable pageable, HttpServletResponse response) {
         model.addAttribute("project", new ProjectModel());
-        model.addAttribute("projects", projectRepository.findAll(pageable));
+        response.setHeader(HttpHeaders.CACHE_CONTROL,
+                CacheControl.maxAge(Duration.ofMinutes(10))
+                        .cachePrivate()
+                        .getHeaderValue());
         return "projects";
+    }
+
+    @Transactional(readOnly = true)
+    @GetMapping("/project_list")
+    public String listProjects(Model model, @SortDefault(sort = "title", direction = Sort.Direction.ASC)  @PageableDefault(size = 50) Pageable pageable) {
+        model.addAttribute("projects",projectRepository.findAll(pageable));
+        return "projectList";
     }
 
     @Transactional(readOnly = true)
