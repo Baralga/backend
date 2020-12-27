@@ -10,29 +10,28 @@
 <div class="columns is-multiline" layout:fragment="content">
     <script defer th:utext="'history.replaceState(null, null, \'' + ${session.filter.toUrlParams()} + '\')'"></script>
 
-    <turbo-frame id="b__tracker">
     <form class="column is-12 notification is-primary" data-controller="tracker" th:action="@{/activities/new}" method="POST" th:object="${activity}" data-turbo-frame="b__activities_list">
 
-        <input name="day" type="hidden"></input>
-        <input name="startTime" type="hidden"></input>
-        <input name="endTime" type="hidden"></input>
+        <input name="day" type="hidden" />
+        <input name="startTime" type="hidden" />
+        <input name="endTime" type="hidden" />
 
 
         <div class="columns is-multiline">
             <div class="column is-4">
-                <div class="button is-large" data-tracker-target="mode" data-action="click->tracker#start">
+                <div class="button is-large" data-tracker-target="controlStart" data-action="click->tracker#start">
                     <span class="icon is-medium">
                         <i class="fa fa-play"></i>
                     </span>
                 </div>
-                <div class="button is-large" data-tracker-target="mode" data-action="click->tracker#stop">
+                <div class="button is-large" style="display: none;" data-tracker-target="controlStop" data-action="click->tracker#stop">
                     <span class="icon is-medium">
                         <i class="fa fa-stop"></i>
                     </span>
                 </div>
 
                 <div class="control select is-large">
-                    <fieldset>
+                    <fieldset data-tracker-target="controlSwitchProject">
                         <select th:field="*{projectId}">
                             <option th:value="${project.id}" th:text="${project.title}" th:each="project: ${projects}"></option>
                         </select>
@@ -60,8 +59,7 @@
             </div>
 
         </div>
-    </form >
-    </turbo-frame>
+    </form>
 
     <div class="column is-12">
         <div class="buttons">

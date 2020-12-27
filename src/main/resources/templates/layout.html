@@ -13,38 +13,37 @@
         import hotwiredTurbo from 'https://cdn.skypack.dev/@hotwired/turbo';
     </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/@js-joda/core@1.11.0/dist/js-joda.js"></script>
-
     <script src="https://unpkg.com/stimulus/dist/stimulus.umd.js"></script>
+    <script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
     <script>
     (() => {
       const application = Stimulus.Application.start()
 
       application.register("tracker", class extends Stimulus.Controller {
+
         static get targets() {
-          return [ "name", "mode", "start", "duration" ]
+          return [ "name", "controlStart", "controlStop", "controlSwitchProject", "start", "duration" ]
         }
 
         updateTimer() {
-            this.index++;
+            let endTime = dayjs();
 
-            let duration = JSJoda.Duration.between(this.startTime, JSJoda.LocalDateTime.now());
+            let hours = endTime.diff(this.startTime, 'h')
+            let minutes = endTime.diff(this.startTime, 'm')
 
-            this.durationTarget.innerHTML = duration.toHours().toString().padStart(2, "0") + ":" + duration.toMinutes().toString().padStart(2, "0");
-
-            console.log("Upate timer!", duration.toString());
-            console.log("UPP", this.startTargets);
+            this.durationTarget.innerHTML = hours.toString().padStart(2, "0") + ":" + minutes.toString().padStart(2, "0");
 
             fetch("/activities/ping");
         }
 
         start() {
-        this.index = 0;
-        this.startTime = JSJoda.LocalDateTime.now();
-            console.log("Start, Stimulus!", this.element);
-            console.log("..............", this.modeTargets)
+            this.startTime = dayjs();
 
-            this.startTarget.innerHTML = this.startTime;
+            this.startTarget.innerHTML = this.startTime.format('HH:mm');
+
+            this.controlStartTarget.style.display = 'none';
+            this.controlStopTarget.style.display = 'inline-flex';
+            this.controlSwitchProjectTarget.disabled = true;
 
             this.updateTimer();
             this.updateTimerFunction = setInterval(() => {
@@ -53,46 +52,31 @@
         }
 
         stop() {
-            this.endTime = JSJoda.LocalDateTime.now();
-            console.log("Stop, Stimulus!", this.startTarget.innerHTML);
+            this.endTime = dayjs();
+
             this.startTarget.innerHTML = "";
             this.durationTarget.innerHTML = "";
-            clearInterval(this.updateTimerFunction);
 
-            console.log("Submitting!", this.element);
+            if (this.updateTimerFunction) {
+                clearInterval(this.updateTimerFunction);
+            }
 
-            console.log("test3", this.element.querySelector("input[name='_csrf']"));
+            this.element.querySelector("input[name='day']").value = this.startTime.format('DD/MM/YYYY');
+            this.element.querySelector("input[name='startTime']").value = this.startTime.format('HH:mm');
+            this.element.querySelector("input[name='endTime']").value = this.endTime.format('HH:mm');
 
-            let crsf = this.element.querySelector("input[name='_csrf']").value;
-
-            let formData = new FormData();
-            formData.append('_csrf', crsf);
-            formData.append('day', this.startTime.format(JSJoda.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-            formData.append('startTime', this.startTime.format(JSJoda.DateTimeFormatter.ofPattern("HH:mm")));
-            formData.append('endTime', this.endTime.format(JSJoda.DateTimeFormatter.ofPattern("HH:mm")));
-            formData.append('description', 'John123');
-            formData.append('projectId', 'John123');
-
-            this.element.querySelector("input[name='day']").value = this.startTime.format(JSJoda.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-            this.element.querySelector("input[name='startTime']").value = this.startTime.format(JSJoda.DateTimeFormatter.ofPattern("HH:mm"));
-            this.element.querySelector("input[name='endTime']").value = this.endTime.format(JSJoda.DateTimeFormatter.ofPattern("HH:mm"));
+            this.controlStartTarget.style.display = 'inline-flex';
+            this.controlStopTarget.style.display = 'none';
+            this.controlSwitchProjectTarget.disabled = false;
 
             this.element.requestSubmit();
 
-/**
-            fetch("/activities/new",
-                {
-                    body: formData,
-                    method: "POST"
-                });
-                **/
         }
 
         connect() {
           console.log("Hello, Stimulus!", this.element)
         }
 
-        // …
       })
     })()
   </script>
