@@ -135,7 +135,7 @@ class End2EndWebITTest extends AbstractEnd2EndTest {
 
         // Assert
         resultActions.andExpect(status().isFound())
-                .andExpect(header().string("Location", "/"));
+                .andExpect(header().string("Location", "/activities?timespan=year&date=2020"));
     }
 
     @WithMockUser(value = "admin", authorities = "ROLE_ADMIN")

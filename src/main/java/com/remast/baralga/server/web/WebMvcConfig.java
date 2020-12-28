@@ -21,7 +21,12 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .addResourceHandler("/webjars/**")
                 .addResourceLocations("classpath:/META-INF/resources/webjars/")
                 .setCacheControl(CacheControl.maxAge(365, TimeUnit.DAYS))
-                .resourceChain(true).addResolver(new WebJarsResourceResolver(new WebJarAssetLocator()));
+                .resourceChain(true)
+                .addResolver(new WebJarsResourceResolver(new WebJarAssetLocator()));
+
+        registry.addResourceHandler("/static/**")
+                .addResourceLocations("classpath:/static/")
+                .resourceChain(true);
     }
 
     @Bean

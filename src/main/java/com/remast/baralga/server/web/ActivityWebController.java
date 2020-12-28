@@ -39,16 +39,7 @@ public class ActivityWebController {
     @Transactional(readOnly = true)
     @GetMapping("/activities")
     public String showActivities(Model model, HttpServletRequest request, HttpServletResponse response, Principal principal) {
-        ActivitiesFilterWeb activitiesFilter = ActivitiesFilterWeb.of(request);
-        if (request.getParameter("timespan") == null && request.getSession().getAttribute("filter") != null) {
-            activitiesFilter = (ActivitiesFilterWeb) request.getSession().getAttribute("filter");
-        } else {
-            request.getSession().setAttribute("filter", activitiesFilter);
-        }
-
-        if (!request.isUserInRole("ROLE_ADMIN")) { // NOSONAR
-            activitiesFilter.setUser(principal.getName());
-        }
+        var activitiesFilter = filterOf(request, principal);
 
         model.addAttribute("currentFilter", activitiesFilter);
         model.addAttribute("previousFilter", activitiesFilter.previous());
@@ -72,16 +63,7 @@ public class ActivityWebController {
     @Transactional(readOnly = true)
     @GetMapping("/")
     public String showHome(Model model, HttpServletRequest request, HttpServletResponse response, Principal principal) {
-        ActivitiesFilterWeb activitiesFilter = ActivitiesFilterWeb.of(request);
-        if (request.getParameter("timespan") == null && request.getSession().getAttribute("filter") != null) {
-            activitiesFilter = (ActivitiesFilterWeb) request.getSession().getAttribute("filter");
-        } else {
-            request.getSession().setAttribute("filter", activitiesFilter);
-        }
-
-        if (!request.isUserInRole("ROLE_ADMIN")) { // NOSONAR
-            activitiesFilter.setUser(principal.getName());
-        }
+        var activitiesFilter = filterOf(request, principal);
 
         model.addAttribute("currentFilter", activitiesFilter);
 
@@ -121,7 +103,9 @@ public class ActivityWebController {
             return new ModelAndView("activityNew", HttpStatus.BAD_REQUEST); // NOSONAR
         }
         activityService.create(activityModel.map(), principal);
-        return new ModelAndView("redirect:/activities"); // NOSONAR
+
+        var activitiesFilter = filterOf(request, principal);
+        return new ModelAndView("redirect:/activities" + activitiesFilter.toUrlParams()); // NOSONAR
     }
 
     @Transactional(readOnly = true)
@@ -164,4 +148,18 @@ public class ActivityWebController {
         return "redirect:/"; // NOSONAR
     }
 
+    private ActivitiesFilterWeb filterOf(HttpServletRequest request, Principal principal) {
+        ActivitiesFilterWeb activitiesFilter = ActivitiesFilterWeb.of(request);
+        if (request.getParameter("timespan") == null && request.getSession().getAttribute("filter") != null) {
+            activitiesFilter = (ActivitiesFilterWeb) request.getSession().getAttribute("filter");
+        } else {
+            request.getSession().setAttribute("filter", activitiesFilter);
+        }
+
+        if (!request.isUserInRole("ROLE_ADMIN")) { // NOSONAR
+            activitiesFilter.setUser(principal.getName());
+        }
+
+        return activitiesFilter;
+    }
 }
