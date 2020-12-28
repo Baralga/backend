@@ -86,6 +86,13 @@ public class ActivityWebController {
         var projects = projectRepository.findAllByActive(true, PageRequest.of(0, 50));
         model.addAttribute("projects", projects); // NOSONAR
         model.addAttribute("activity", new ActivityModel(projects.get(0)));
+
+        response.setHeader(HttpHeaders.CACHE_CONTROL,
+                CacheControl.maxAge(Duration.ofSeconds(0))
+                        .cachePrivate()
+                        .mustRevalidate()
+                        .getHeaderValue());
+
         return "activityNew"; // NOSONAR
     }
 
