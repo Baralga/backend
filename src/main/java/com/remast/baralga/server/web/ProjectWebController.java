@@ -46,8 +46,9 @@ public class ProjectWebController {
     public String showProjects(Model model, @SortDefault(sort = "title", direction = Sort.Direction.ASC)  @PageableDefault(size = 50) Pageable pageable, HttpServletResponse response) {
         model.addAttribute("project", new ProjectModel());
         response.setHeader(HttpHeaders.CACHE_CONTROL,
-                CacheControl.maxAge(Duration.ofMinutes(10))
+                CacheControl.maxAge(Duration.ofSeconds(0))
                         .cachePrivate()
+                        .mustRevalidate()
                         .getHeaderValue());
         return "projects";
     }

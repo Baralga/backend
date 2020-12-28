@@ -13,8 +13,9 @@
         import hotwiredTurbo from 'https://cdn.skypack.dev/@hotwired/turbo';
     </script>
 
-    <script src="https://unpkg.com/stimulus/dist/stimulus.umd.js"></script>
-    <script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
+    <script src="/webjars/stimulus/2.0.0/dist/stimulus.umd.js"></script>
+    <script src="/webjars/dayjs/1.9.1/dayjs.min.js"></script>
+
     <script>
     (() => {
       const application = Stimulus.Application.start()
@@ -28,8 +29,8 @@
         updateTimer() {
             let endTime = dayjs();
 
-            let hours = endTime.diff(this.startTime, 'h')
-            let minutes = endTime.diff(this.startTime, 'm')
+            let hours = endTime.diff(this.startTime, "h")
+            let minutes = endTime.diff(this.startTime, "m")
 
             this.durationTarget.innerHTML = hours.toString().padStart(2, "0") + ":" + minutes.toString().padStart(2, "0");
 
@@ -39,16 +40,16 @@
         start() {
             this.startTime = dayjs();
 
-            this.startTarget.innerHTML = this.startTime.format('HH:mm');
+            this.startTarget.innerHTML = this.startTime.format("HH:mm");
 
-            this.controlStartTarget.style.display = 'none';
-            this.controlStopTarget.style.display = 'inline-flex';
+            this.controlStartTarget.style.display = "none";
+            this.controlStopTarget.style.display = "inline-flex";
             this.controlSwitchProjectTarget.disabled = true;
 
             this.updateTimer();
             this.updateTimerFunction = setInterval(() => {
               this.updateTimer()
-            }, 5000);
+            }, 10000);
         }
 
         stop() {
@@ -61,20 +62,15 @@
                 clearInterval(this.updateTimerFunction);
             }
 
-            this.element.querySelector("input[name='day']").value = this.startTime.format('DD/MM/YYYY');
-            this.element.querySelector("input[name='startTime']").value = this.startTime.format('HH:mm');
-            this.element.querySelector("input[name='endTime']").value = this.endTime.format('HH:mm');
+            this.element.querySelector("input[name='day']").value = this.startTime.format("DD/MM/YYYY");
+            this.element.querySelector("input[name='startTime']").value = this.startTime.format("HH:mm");
+            this.element.querySelector("input[name='endTime']").value = this.endTime.format("HH:mm");
 
-            this.controlStartTarget.style.display = 'inline-flex';
-            this.controlStopTarget.style.display = 'none';
+            this.controlStartTarget.style.display = "inline-flex";
+            this.controlStopTarget.style.display = "none";
             this.controlSwitchProjectTarget.disabled = false;
 
             this.element.requestSubmit();
-
-        }
-
-        connect() {
-          console.log("Hello, Stimulus!", this.element)
         }
 
       })

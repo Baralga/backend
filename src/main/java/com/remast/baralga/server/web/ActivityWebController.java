@@ -7,6 +7,8 @@ import com.remast.baralga.server.ProjectRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.CacheControl;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -17,8 +19,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.security.Principal;
+import java.time.Duration;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -34,7 +38,7 @@ public class ActivityWebController {
 
     @Transactional(readOnly = true)
     @GetMapping("/")
-    public String showHome(Model model, HttpServletRequest request, Principal principal) {
+    public String showHome(Model model, HttpServletRequest request, HttpServletResponse response, Principal principal) {
         ActivitiesFilterWeb activitiesFilter = ActivitiesFilterWeb.of(request);
         if (request.getParameter("timespan") == null && request.getSession().getAttribute("filter") != null) {
            activitiesFilter = (ActivitiesFilterWeb) request.getSession().getAttribute("filter");
@@ -60,12 +64,18 @@ public class ActivityWebController {
         model.addAttribute("projects", projects); // NOSONAR
         model.addAttribute("activity", new ActivityModel(projects.get(0)));
 
+        response.setHeader(HttpHeaders.CACHE_CONTROL,
+                CacheControl.maxAge(Duration.ofSeconds(0))
+                        .cachePrivate()
+                        .mustRevalidate()
+                        .getHeaderValue());
+
         return "index"; // NOSONAR
     }
 
     @Transactional(readOnly = true)
     @GetMapping("/activities/new")
-    public String newActivity(Model model, HttpServletRequest request, Principal principal) {
+    public String newActivity(Model model, HttpServletResponse response) {
         var projects = projectRepository.findAllByActive(true, PageRequest.of(0, 50));
         model.addAttribute("projects", projects); // NOSONAR
         model.addAttribute("activity", new ActivityModel(projects.get(0)));
