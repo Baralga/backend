@@ -1,3 +1,4 @@
+import { Turbo } from "@hotwired/turbo"
 import { Application } from "stimulus"
 import HelloController from "./controllers/hello_controller"
 

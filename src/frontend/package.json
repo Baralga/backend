@@ -10,6 +10,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@hotwired/turbo": "^7.0.0-beta.1",
+    "cssnano": "^4.1.10",
     "stimulus": "^2.0.0"
   }
 }
