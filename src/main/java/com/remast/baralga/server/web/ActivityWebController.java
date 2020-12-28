@@ -37,11 +37,11 @@ public class ActivityWebController {
     private final @NonNull ProjectRepository projectRepository;
 
     @Transactional(readOnly = true)
-    @GetMapping("/")
-    public String showHome(Model model, HttpServletRequest request, HttpServletResponse response, Principal principal) {
+    @GetMapping("/activities")
+    public String showActivities(Model model, HttpServletRequest request, HttpServletResponse response, Principal principal) {
         ActivitiesFilterWeb activitiesFilter = ActivitiesFilterWeb.of(request);
         if (request.getParameter("timespan") == null && request.getSession().getAttribute("filter") != null) {
-           activitiesFilter = (ActivitiesFilterWeb) request.getSession().getAttribute("filter");
+            activitiesFilter = (ActivitiesFilterWeb) request.getSession().getAttribute("filter");
         } else {
             request.getSession().setAttribute("filter", activitiesFilter);
         }
@@ -60,9 +60,40 @@ public class ActivityWebController {
                 .collect(Collectors.toMap(Project::getId, p -> p)));
         model.addAttribute("totalDuration", activities.getTotalDuration());
 
+        response.setHeader(HttpHeaders.CACHE_CONTROL,
+                CacheControl.maxAge(Duration.ofSeconds(0))
+                        .cachePrivate()
+                        .mustRevalidate()
+                        .getHeaderValue());
+
+        return "activitiesList"; // NOSONAR
+    }
+
+    @Transactional(readOnly = true)
+    @GetMapping("/")
+    public String showHome(Model model, HttpServletRequest request, HttpServletResponse response, Principal principal) {
+        ActivitiesFilterWeb activitiesFilter = ActivitiesFilterWeb.of(request);
+        if (request.getParameter("timespan") == null && request.getSession().getAttribute("filter") != null) {
+            activitiesFilter = (ActivitiesFilterWeb) request.getSession().getAttribute("filter");
+        } else {
+            request.getSession().setAttribute("filter", activitiesFilter);
+        }
+
+        if (!request.isUserInRole("ROLE_ADMIN")) { // NOSONAR
+            activitiesFilter.setUser(principal.getName());
+        }
+
+        model.addAttribute("currentFilter", activitiesFilter);
+
         var projects = projectRepository.findAllByActive(true, PageRequest.of(0, 50));
         model.addAttribute("projects", projects); // NOSONAR
         model.addAttribute("activity", new ActivityModel(projects.get(0)));
+
+        response.setHeader(HttpHeaders.CACHE_CONTROL,
+                CacheControl.maxAge(Duration.ofSeconds(0))
+                        .cachePrivate()
+                        .mustRevalidate()
+                        .getHeaderValue());
 
         return "index"; // NOSONAR
     }
@@ -90,7 +121,7 @@ public class ActivityWebController {
             return new ModelAndView("activityNew", HttpStatus.BAD_REQUEST); // NOSONAR
         }
         activityService.create(activityModel.map(), principal);
-        return new ModelAndView("redirect:/"); // NOSONAR
+        return new ModelAndView("redirect:/activities"); // NOSONAR
     }
 
     @Transactional(readOnly = true)
