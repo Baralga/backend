@@ -9,6 +9,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
+import org.springframework.http.CacheControl;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,8 +21,14 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.time.Duration;
+import java.util.stream.Collectors;
 
 @Transactional
 @Controller
@@ -33,28 +43,50 @@ public class ProjectWebController {
 
     @Transactional(readOnly = true)
     @GetMapping("/projects")
-    public String showProjects(Model model, @SortDefault(sort = "title", direction = Sort.Direction.ASC)  @PageableDefault(size = 50) Pageable pageable) {
+    public String showProjects(Model model, HttpServletResponse response) {
         model.addAttribute("project", new ProjectModel());
-        model.addAttribute("projects", projectRepository.findAll(pageable));
+        response.setHeader(HttpHeaders.CACHE_CONTROL,
+                CacheControl.maxAge(Duration.ofSeconds(0))
+                        .cachePrivate()
+                        .mustRevalidate()
+                        .getHeaderValue());
         return "projects";
+    }
+
+    @Transactional(readOnly = true)
+    @GetMapping("/project_list")
+    public String listProjects(Model model, @SortDefault(sort = "title", direction = Sort.Direction.ASC)  @PageableDefault(size = 50) Pageable pageable, HttpServletResponse response) {
+        model.addAttribute("projects",projectRepository.findAll(pageable));
+        response.setHeader(HttpHeaders.CACHE_CONTROL,
+                CacheControl.maxAge(Duration.ofSeconds(0))
+                        .cachePrivate()
+                        .mustRevalidate()
+                        .getHeaderValue());
+        return "projectList";
     }
 
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/projects/{id}/delete")
-    public String showDeleteProject(@PathVariable final String id, Model model) {
+    public String showDeleteProject(@PathVariable final String id, Model model, HttpServletResponse response) {
         var project =  projectRepository.findById(id);
         if (project.isEmpty()) {
             return "redirect:/projects"; // NOSONAR
         }
         model.addAttribute("project", project.get());
         model.addAttribute("dependingActivitiesCount", activityRepository.countAllByProjectId(project.get().getId()));
+
+        response.setHeader(HttpHeaders.CACHE_CONTROL,
+                CacheControl.maxAge(Duration.ofSeconds(0))
+                        .cachePrivate()
+                        .mustRevalidate()
+                        .getHeaderValue());
         return "projectDelete"; // NOSONAR
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/projects/{id}/delete")
-    public String deleteProject(@PathVariable final String id, Model model) {
+    public String deleteProject(@PathVariable final String id) {
         var project =  projectRepository.findById(id);
         if (project.isEmpty()) {
             return "redirect:/projects"; // NOSONAR
@@ -64,19 +96,11 @@ public class ProjectWebController {
         return "redirect:/projects"; // NOSONAR
     }
 
-    @Transactional(readOnly = true)
-    @PostMapping(path = "/projects/{id}/delete", params = "cancel")
-    public String deleteProjectCancel(@PathVariable final String id) {
-        return "redirect:/projects";
-    }
-
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PostMapping("/projects")
-    public String createProject(@Valid ProjectModel project, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return "redirect:/projects"; // NOSONAR
-        }
-        projectService.create(project.map());
+    @PostMapping(value = "/projects", produces = "text/html; turbo-stream=*")
+    public String createProject(@Valid ProjectModel projectModel, Model model, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
+        var project = projectService.create(projectModel.map());
+        model.addAttribute("project", project);
         return "redirect:/projects"; // NOSONAR
     }
 

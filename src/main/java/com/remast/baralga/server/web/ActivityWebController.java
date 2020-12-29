@@ -7,15 +7,22 @@ import com.remast.baralga.server.ProjectRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.CacheControl;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.security.Principal;
+import java.time.Duration;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -30,18 +37,9 @@ public class ActivityWebController {
     private final @NonNull ProjectRepository projectRepository;
 
     @Transactional(readOnly = true)
-    @GetMapping("/")
-    public String showHome(Model model, HttpServletRequest request, Principal principal) {
-        ActivitiesFilterWeb activitiesFilter = ActivitiesFilterWeb.of(request);
-        if (request.getParameter("timespan") == null && request.getSession().getAttribute("filter") != null) {
-           activitiesFilter = (ActivitiesFilterWeb) request.getSession().getAttribute("filter");
-        } else {
-            request.getSession().setAttribute("filter", activitiesFilter);
-        }
-
-        if (!request.isUserInRole("ROLE_ADMIN")) { // NOSONAR
-            activitiesFilter.setUser(principal.getName());
-        }
+    @GetMapping("/activities")
+    public String showActivities(Model model, HttpServletRequest request, HttpServletResponse response, Principal principal) {
+        var activitiesFilter = filterOf(request, principal);
 
         model.addAttribute("currentFilter", activitiesFilter);
         model.addAttribute("previousFilter", activitiesFilter.previous());
@@ -49,35 +47,72 @@ public class ActivityWebController {
 
         var activities = activityService.read(activitiesFilter.map());
         model.addAttribute("activities", activities.getActivities());
-        model.addAttribute("projects", activities.getProjects().stream() // NOSONAR
+        model.addAttribute("projectsById", activities.getProjects().stream() // NOSONAR
                 .collect(Collectors.toMap(Project::getId, p -> p)));
         model.addAttribute("totalDuration", activities.getTotalDuration());
+
+        response.setHeader(HttpHeaders.CACHE_CONTROL,
+                CacheControl.maxAge(Duration.ofSeconds(0))
+                        .cachePrivate()
+                        .mustRevalidate()
+                        .getHeaderValue());
+
+        return "activitiesList"; // NOSONAR
+    }
+
+    @Transactional(readOnly = true)
+    @GetMapping("/")
+    public String showHome(Model model, HttpServletRequest request, HttpServletResponse response, Principal principal) {
+        var activitiesFilter = filterOf(request, principal);
+
+        model.addAttribute("currentFilter", activitiesFilter);
+
+        var projects = projectRepository.findAllByActive(true, PageRequest.of(0, 50));
+        model.addAttribute("projects", projects); // NOSONAR
+        model.addAttribute("activity", new ActivityModel(projects.get(0)));
+
+        response.setHeader(HttpHeaders.CACHE_CONTROL,
+                CacheControl.maxAge(Duration.ofSeconds(0))
+                        .cachePrivate()
+                        .mustRevalidate()
+                        .getHeaderValue());
+
         return "index"; // NOSONAR
     }
 
     @Transactional(readOnly = true)
     @GetMapping("/activities/new")
-    public String newActivity(Model model, HttpServletRequest request, Principal principal) {
+    public String newActivity(Model model, HttpServletResponse response) {
         var projects = projectRepository.findAllByActive(true, PageRequest.of(0, 50));
         model.addAttribute("projects", projects); // NOSONAR
         model.addAttribute("activity", new ActivityModel(projects.get(0)));
+
+        response.setHeader(HttpHeaders.CACHE_CONTROL,
+                CacheControl.maxAge(Duration.ofSeconds(0))
+                        .cachePrivate()
+                        .mustRevalidate()
+                        .getHeaderValue());
+
         return "activityNew"; // NOSONAR
     }
 
-    @PostMapping("/activities/new")
-    public String createActivity(@Valid ActivityModel activityModel, BindingResult bindingResult, Principal principal) {
-        activityModel.validateDates().stream().forEach(bindingResult::addError);
-        if (bindingResult.hasErrors()) {
-            return "redirect:/activities/new"; // NOSONAR
-        }
-        activityService.create(activityModel.map(), principal);
-        return "redirect:/"; // NOSONAR
+    @Transactional(readOnly = true)
+    @GetMapping("/activities/ping")
+    public ResponseEntity pingActivity() {
+        return ResponseEntity.ok().build();
     }
 
-    @Transactional(readOnly = true)
-    @PostMapping(path = "/activities/new", params = "cancel")
-    public String createActivityCancel() {
-        return "redirect:/"; // NOSONAR
+    @PostMapping("/activities/new")
+    public ModelAndView createActivity(@Valid ActivityModel activityModel, Model model, HttpServletRequest request, BindingResult bindingResult, Principal principal) {
+        activityModel.validateDates().stream().forEach(bindingResult::addError);
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("activity", activityModel);
+            return new ModelAndView("activityNew", HttpStatus.BAD_REQUEST); // NOSONAR
+        }
+        activityService.create(activityModel.map(), principal);
+
+        var activitiesFilter = filterOf(request, principal);
+        return new ModelAndView("redirect:/" + activitiesFilter.toUrlParams()); // NOSONAR
     }
 
     @Transactional(readOnly = true)
@@ -114,4 +149,18 @@ public class ActivityWebController {
         return "redirect:/"; // NOSONAR
     }
 
+    private ActivitiesFilterWeb filterOf(HttpServletRequest request, Principal principal) {
+        ActivitiesFilterWeb activitiesFilter = ActivitiesFilterWeb.of(request);
+        if (request.getParameter("timespan") == null && request.getSession().getAttribute("filter") != null) {
+            activitiesFilter = (ActivitiesFilterWeb) request.getSession().getAttribute("filter");
+        } else {
+            request.getSession().setAttribute("filter", activitiesFilter);
+        }
+
+        if (!request.isUserInRole("ROLE_ADMIN")) { // NOSONAR
+            activitiesFilter.setUser(principal.getName());
+        }
+
+        return activitiesFilter;
+    }
 }

@@ -1,0 +1,14 @@
+<turbo-frame id="b__projects_list" class="column is-12">
+    <div class="card" th:title=${project.title} th:each="project: ${projects}">
+        <header class="card-header">
+            <p class="card-header-title" th:text="${project.title}"></p>
+            <a th:href="@{/projects/{projectId}/delete(projectId=${project.id})}" sec:authorize="hasRole('ADMIN')"
+               data-turbo-frame="_top"
+               class="card-header-icon">
+                        <span class="icon">
+                          <i class="fas fa-trash" aria-hidden="true"></i>
+                        </span>
+            </a>
+        </header>
+    </div>
+</turbo-frame>

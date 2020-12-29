@@ -1,18 +1,19 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title layout:title-pattern="$CONTENT_TITLE __ $LAYOUT_TITLE">Baralga</title>
 
-    <script src="/static/ui.b4adbb1c.js" async=""></script>
-    <link rel="stylesheet" href="/static/style.43ba7c7c.css">
+    <script src="./index.js" async></script>
+    <link rel="stylesheet" href="./style.scss" />
 </head>
 <body>
 
-<nav up-fixed="top" class="is-dark navbar" role="navigation" aria-label="main navigation" layout:fragment="navigation">
+<nav up-fixed="top" class="navbar is-dark" role="navigation" aria-label="main navigation" layout:fragment="navigation">
     <div class="navbar-brand">
-        <a class="is-primary navbar-item" style="font-weight:700;font-variant:small-caps;" th:href="@{/}">
+        <a class="navbar-item is-primary" style="font-weight: bold; font-variant: small-caps;" th:href="@{/}">
             Baralga
         </a>
 
@@ -41,7 +42,7 @@
             <div class="navbar-item">
                 <div class="buttons">
                     <form th:action="@{/logout}" method="POST">
-                        <input type="submit" class="button is-light" value="Logout">
+                        <input type="submit" class="button is-light" value="Logout"></input>
                     </form>
                 </div>
             </div>
