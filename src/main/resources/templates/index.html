@@ -3,12 +3,12 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout}">
 <head>
-    <title>Activities</title>
+    <title>Activities 2</title>
 </head>
 <body>
 
 <div class="columns is-multiline" layout:fragment="content">
-    <form class="column is-12 notification is-primary" data-controller="tracker" th:action="@{/activities/new}" method="POST" th:object="${activity}" data-turbo-frame="b__activities_list">
+    <form class="column is-12 notification is-primary" data-controller="tracker" th:action="@{'/activities/new?to=activities'}" method="POST" th:object="${activity}" data-turbo-frame="b__activities_list">
 
         <input name="day" type="hidden" />
         <input name="startTime" type="hidden" />

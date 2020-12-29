@@ -17,6 +17,7 @@
 	<properties>
 		<java.version>11</java.version>
 		<sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+		<sonar.sources>src/main/java,src/main/resources</sonar.sources>
 	</properties>
 
 	<dependencies>

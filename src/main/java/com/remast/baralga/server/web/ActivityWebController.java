@@ -112,6 +112,11 @@ public class ActivityWebController {
         activityService.create(activityModel.map(), principal);
 
         var activitiesFilter = filterOf(request, principal);
+
+        if (request.getParameter("to") != null && "activities".equals(request.getParameter("to"))) {
+            return new ModelAndView("redirect:/activities" + activitiesFilter.toUrlParams()); // NOSONAR
+        }
+
         return new ModelAndView("redirect:/" + activitiesFilter.toUrlParams()); // NOSONAR
     }
 
