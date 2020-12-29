@@ -44,7 +44,7 @@ public class ProjectRestController {
         if (project.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(new ProjectRepresentation(project.get(), request.isUserInRole("ROLE_ADMIN")));
+        return ResponseEntity.ok(new ProjectRepresentation(project.get(), request.isUserInRole("ROLE_ADMIN"))); // NOSONAR
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
