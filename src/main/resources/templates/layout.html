@@ -1,106 +1,20 @@
+<!-- TEWST --->
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title layout:title-pattern="$CONTENT_TITLE __ $LAYOUT_TITLE">Baralga</title>
 
-    <link rel="stylesheet" href="/webjars/bulma/0.9.1/css/bulma.min.css">
-    <link rel="stylesheet" href="/webjars/font-awesome/5.15.1/css/all.min.css">
-
-    <script src="https://unpkg.com/@hotwired/turbo@7.0.0-beta.1/dist/turbo.es5-umd.js" ></script>
-    <script defer>
-      // Turbo.connectStreamSource(new WebSocket('ws://localhost:8080/messages'))
-    </script>
-
-    <script src="/webjars/stimulus/2.0.0/dist/stimulus.umd.js"></script>
-    <script src="/webjars/dayjs/1.9.1/dayjs.min.js"></script>
-
-    <script>
-    (() => {
-      const application = Stimulus.Application.start()
-
-      application.register("tracker", class extends Stimulus.Controller {
-
-        static get targets() {
-          return [ "name", "controlStart", "controlStop", "controlSwitchProject", "start", "duration" ]
-        }
-
-        updateTimer() {
-            let endTime = dayjs();
-
-            let hours = endTime.diff(this.startTime, "h")
-            let minutes = endTime.diff(this.startTime, "m")
-
-            this.durationTarget.innerHTML = hours.toString().padStart(2, "0") + ":" + minutes.toString().padStart(2, "0");
-
-            fetch("/activities/ping");
-        }
-
-        start() {
-            this.startTime = dayjs();
-
-            this.startTarget.innerHTML = this.startTime.format("HH:mm");
-
-            this.controlStartTarget.style.display = "none";
-            this.controlStopTarget.style.display = "inline-flex";
-            this.controlSwitchProjectTarget.disabled = true;
-
-            this.updateTimer();
-            this.updateTimerFunction = setInterval(() => {
-              this.updateTimer()
-            }, 10000);
-        }
-
-        stop() {
-            this.endTime = dayjs();
-
-            this.startTarget.innerHTML = "";
-            this.durationTarget.innerHTML = "";
-
-            if (this.updateTimerFunction) {
-                clearInterval(this.updateTimerFunction);
-            }
-
-            this.element.querySelector("input[name='day']").value = this.startTime.format("DD/MM/YYYY");
-            this.element.querySelector("input[name='startTime']").value = this.startTime.format("HH:mm");
-            this.element.querySelector("input[name='endTime']").value = this.endTime.format("HH:mm");
-
-            this.controlStartTarget.style.display = "inline-flex";
-            this.controlStopTarget.style.display = "none";
-            this.controlSwitchProjectTarget.disabled = false;
-
-            this.element.requestSubmit();
-        }
-
-      })
-
-      application.register("activity-new", class extends Stimulus.Controller {
-
-        static get targets() {
-          return [ "startTime", "endTime", "day" ]
-        }
-
-        connect() {
-            let now = dayjs();
-
-            this.dayTarget.value = now.format("DD/MM/YYYY");
-            this.startTimeTarget.value = now.format("HH:mm");
-            this.endTimeTarget.value = now.format("HH:mm");
-        }
-
-      })
-    })()
-  </script>
-
+    <script src="/static/frontend.1eac22e9.js" async=""></script>
+    <link rel="stylesheet" href="/static/style.43ba7c7c.css">
 </head>
 <body>
 
 <!-- Main Navigation -->
-<nav up-fixed="top" class="navbar is-dark" role="navigation" aria-label="main navigation" layout:fragment="navigation">
+<nav up-fixed="top" class="is-dark navbar" role="navigation" aria-label="main navigation" layout:fragment="navigation">
     <div class="navbar-brand">
-        <a class="navbar-item is-primary" style="font-weight: bold; font-variant: small-caps;" th:href="@{/}">
+        <a class="is-primary navbar-item" style="font-weight:700;font-variant:small-caps;" th:href="@{/}">
             Baralga
         </a>
 
@@ -129,7 +43,7 @@
             <div class="navbar-item">
                 <div class="buttons">
                     <form th:action="@{/logout}" method="POST" up-target="body">
-                        <input type="submit" class="button is-light" value="Logout"></input>
+                        <input type="submit" class="button is-light" value="Logout">
                     </form>
                 </div>
             </div>

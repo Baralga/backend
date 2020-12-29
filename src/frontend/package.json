@@ -4,14 +4,19 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "parcel build layout.html --public-url /static",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.1",
     "@hotwired/turbo": "^7.0.0-beta.1",
+    "bulma": "^0.9.1",
     "cssnano": "^4.1.10",
+    "dayjs": "^1.9.8",
+    "sass": "^1.30.0",
     "stimulus": "^2.0.0"
   }
 }
