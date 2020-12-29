@@ -45,9 +45,9 @@ class ActivityModelTest {
         assertThat(activityModel.getId()).isNull();
         assertThat(activityModel.getDescription()).isNull();
         assertThat(activityModel.getProjectId()).isEqualTo(project.getId());
-        assertThat(activityModel.getDay()).isNotNull();
-        assertThat(activityModel.getStartTime()).isNotNull();
-        assertThat(activityModel.getEndTime()).isNotNull();
+        assertThat(activityModel.getDay()).isNull();
+        assertThat(activityModel.getStartTime()).isNull();
+        assertThat(activityModel.getEndTime()).isNull();
     }
 
     @Test
