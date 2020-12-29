@@ -43,11 +43,7 @@ public class ActivityModel {
     private String projectId;
 
     public ActivityModel(final Project project) {
-        var now = LocalDateTime.now();
         this.projectId = project.getId();
-        this.day = now.format(DATE_FORMAT);
-        this.startTime = now.format(HOUR_FORMAT);
-        this.endTime = now.format(HOUR_FORMAT);
     }
 
     public ActivityModel(final Activity activity) {

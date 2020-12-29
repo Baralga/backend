@@ -1,5 +1,10 @@
 /*~
 
+# Parcel
+node_modules
+.cache
+dist
+
 dependency-reduced-pom.xml
 
 # Created by https://www.gitignore.io
