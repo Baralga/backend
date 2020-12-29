@@ -114,3 +114,10 @@ This can be fixed with the following settings:
 Sql_mode =ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
 ```
 
+## Development
+
+## Run ui build
+The ui is build with parcel.js which bundles and compresses all javascript and css. The ui build copies the hashed
+assets to the respective maven directories.
+
+    mvn generate-resources -P ui
