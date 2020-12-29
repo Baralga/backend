@@ -13,7 +13,7 @@
         Edit Activity
     </h1>
 
-    <form th:action="@{'/activities/' + ${activity.id}}" th:object="${activity}" method="POST" up-target="body">
+    <form th:action="@{'/activities/' + ${activity.id}}" th:object="${activity}" method="POST">
 
         <input th:field="*{id}" type="hidden"/>
 

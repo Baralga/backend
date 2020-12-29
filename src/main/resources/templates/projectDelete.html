@@ -27,7 +27,7 @@
             </article>
         </div>
 
-        <form th:action="@{'/projects/' + ${project.id} + '/delete'}" th:object="${project}" method="POST" up-target="body">
+        <form th:action="@{'/projects/' + ${project.id} + '/delete'}" th:object="${project}" method="POST">
             <div class="column is-12">
                 <div class="field is-grouped">
                     <p class="control">
