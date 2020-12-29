@@ -112,13 +112,7 @@ public class ActivityWebController {
         activityService.create(activityModel.map(), principal);
 
         var activitiesFilter = filterOf(request, principal);
-        return new ModelAndView("redirect:/activities" + activitiesFilter.toUrlParams()); // NOSONAR
-    }
-
-    @Transactional(readOnly = true)
-    @PostMapping(path = "/activities/new", params = "cancel")
-    public String createActivityCancel() {
-        return "redirect:/"; // NOSONAR
+        return new ModelAndView("redirect:/" + activitiesFilter.toUrlParams()); // NOSONAR
     }
 
     @Transactional(readOnly = true)

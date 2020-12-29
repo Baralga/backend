@@ -43,7 +43,7 @@ public class ProjectWebController {
 
     @Transactional(readOnly = true)
     @GetMapping("/projects")
-    public String showProjects(Model model, @SortDefault(sort = "title", direction = Sort.Direction.ASC)  @PageableDefault(size = 50) Pageable pageable, HttpServletResponse response) {
+    public String showProjects(Model model, HttpServletResponse response) {
         model.addAttribute("project", new ProjectModel());
         response.setHeader(HttpHeaders.CACHE_CONTROL,
                 CacheControl.maxAge(Duration.ofSeconds(0))
@@ -55,21 +55,32 @@ public class ProjectWebController {
 
     @Transactional(readOnly = true)
     @GetMapping("/project_list")
-    public String listProjects(Model model, @SortDefault(sort = "title", direction = Sort.Direction.ASC)  @PageableDefault(size = 50) Pageable pageable) {
+    public String listProjects(Model model, @SortDefault(sort = "title", direction = Sort.Direction.ASC)  @PageableDefault(size = 50) Pageable pageable, HttpServletResponse response) {
         model.addAttribute("projects",projectRepository.findAll(pageable));
+        response.setHeader(HttpHeaders.CACHE_CONTROL,
+                CacheControl.maxAge(Duration.ofSeconds(0))
+                        .cachePrivate()
+                        .mustRevalidate()
+                        .getHeaderValue());
         return "projectList";
     }
 
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/projects/{id}/delete")
-    public String showDeleteProject(@PathVariable final String id, Model model) {
+    public String showDeleteProject(@PathVariable final String id, Model model, HttpServletResponse response) {
         var project =  projectRepository.findById(id);
         if (project.isEmpty()) {
             return "redirect:/projects"; // NOSONAR
         }
         model.addAttribute("project", project.get());
         model.addAttribute("dependingActivitiesCount", activityRepository.countAllByProjectId(project.get().getId()));
+
+        response.setHeader(HttpHeaders.CACHE_CONTROL,
+                CacheControl.maxAge(Duration.ofSeconds(0))
+                        .cachePrivate()
+                        .mustRevalidate()
+                        .getHeaderValue());
         return "projectDelete"; // NOSONAR
     }
 
@@ -83,12 +94,6 @@ public class ProjectWebController {
         activityRepository.deleteByProjectId(id);
         projectRepository.deleteById(id);
         return "redirect:/projects"; // NOSONAR
-    }
-
-    @Transactional(readOnly = true)
-    @PostMapping(path = "/projects/{id}/delete", params = "cancel")
-    public String deleteProjectCancel(@PathVariable final String id) {
-        return "redirect:/projects";
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
