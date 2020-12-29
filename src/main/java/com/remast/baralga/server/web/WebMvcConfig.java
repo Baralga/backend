@@ -7,8 +7,6 @@ import org.springframework.http.CacheControl;
 import org.springframework.web.filter.ShallowEtagHeaderFilter;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.resource.WebJarsResourceResolver;
-import org.webjars.WebJarAssetLocator;
 
 import java.util.concurrent.TimeUnit;
 
@@ -17,15 +15,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry
-                .addResourceHandler("/webjars/**")
-                .addResourceLocations("classpath:/META-INF/resources/webjars/")
-                .setCacheControl(CacheControl.maxAge(365, TimeUnit.DAYS))
-                .resourceChain(true)
-                .addResolver(new WebJarsResourceResolver(new WebJarAssetLocator()));
-
         registry.addResourceHandler("/static/**")
                 .addResourceLocations("classpath:/static/")
+                .setCacheControl(CacheControl.maxAge(10, TimeUnit.DAYS))
                 .resourceChain(true);
     }
 
