@@ -1,8 +1,10 @@
 <turbo-frame id="b__activities_list" class="column is-12">
     <script defer th:utext="'history.replaceState(null, null, \'' + ${session.filter.toUrlParams()} + '\')'"></script>
 
+    <div class="columns is-multiline">
+
     <div class="column is-12">
-        <nav  up-fixed="top" class="level" id="b__activities_filter">
+        <nav class="level is-mobile" id="b__activities_filter">
             <div class="level-left">
 
                 <div class="level-item">
@@ -50,53 +52,60 @@
 
             </div>
 
-            <div class="level-right">
+            <div class="level-right is-hidden-mobile">
                 <span th:text="${currentFilter}"></span>
             </div>
         </nav>
     </div>
 
-    <div th:if="${#lists.isEmpty(activities)}" class="notification is-warning">
-        No activities in period.
+    <div th:if="${#lists.isEmpty(activities)}" class="column is-12">
+        <p class="notification is-warning">No activities in period.</p>
     </div>
 
-    <div class="card" th:title="${activity.description}" th:each="activity: ${activities}">
-        <header class="card-header">
-            <p class="card-header-title" th:text="${#temporals.format(activity.start, 'dd/MM/yyyy')}"></p>
-            <a th:href="@{/activities/{activityId}(activityId=${activity.id})}" class="card-header-icon"
-               data-turbo-frame="_top">
-                      <span class="icon">
-                          <i class="fas fa-edit" aria-hidden="true"></i>
-                      </span>
-            </a>
-        </header>
-        <div class="card-content">
-            <div class="content">
-                <div class="columns is-mobile">
-                    <div class="column is-4" th:text="${projectsById[activity.projectId].title}"></div>
-                    <div class="column is-4"
-                         th:text="${#temporals.format(activity.start, 'HH:mm')} + ' - ' + ${#temporals.format(activity.end, 'HH:mm')}"></div>
-                    <div class="column is-2" sec:authorize="hasRole('ADMIN')" th:text="${activity.user}"></div>
-                    <div class="column is-2 nowrap" th:text="${activity.duration}"></div>
+    <div class="column is-12" th:each="activity: ${activities}">
+        <div class="card" th:title="${activity.description}">
+            <header class="card-header">
+                <p class="card-header-title" th:text="${#temporals.format(activity.start, 'dd/MM/yyyy')}"></p>
+                <a th:href="@{/activities/{activityId}(activityId=${activity.id})}" class="card-header-icon"
+                   data-turbo-frame="_top">
+                          <span class="icon">
+                              <i class="fas fa-edit" aria-hidden="true"></i>
+                          </span>
+                </a>
+            </header>
+            <div class="card-content">
+                <div class="content">
+                    <div class="columns is-mobile">
+                        <div class="column is-4" th:text="${projectsById[activity.projectId].title}"></div>
+                        <div class="column is-half-mobile is-one-third-desktop"
+                             style="white-space: nowrap;"
+                             th:text="${#temporals.format(activity.start, 'HH:mm')} + ' - ' + ${#temporals.format(activity.end, 'HH:mm')}"></div>
+                        <div class="column is-2 is-hidden-mobile" sec:authorize="hasRole('ADMIN')" th:text="${activity.user}"></div>
+                        <div class="column is-2" style="white-space: nowrap;" th:text="${activity.duration}"></div>
+                    </div>
                 </div>
             </div>
+            <!--
+            <footer class="card-footer">
+              <a href="#" class="card-footer-item">Save</a>
+            </footer>
+            -->
         </div>
-        <!--
-        <footer class="card-footer">
-          <a href="#" class="card-footer-item">Save</a>
-        </footer>
-        -->
     </div>
 
-    <div th:unless="${#lists.isEmpty(activities)}" class="card">
-        <header class="card-header">
-            <div class="card-header-title columns is-mobile">
-                <div class="column is-6"></div>
-                <div class="column is-3">Total:</div>
-                <div class="column is-3 nowrap" th:text="${totalDuration}">
+   <div class="column is-12" th:unless="${#lists.isEmpty(activities)}">
+        <div class="card">
+            <header class="card-header">
+                <div class="card-header-title columns is-mobile">
+                    <div class="column is-6"></div>
+                    <div class="column is-3">Total:</div>
+                    <div class="column is-3 nowrap" th:text="${totalDuration}">
+                    </div>
                 </div>
-            </div>
-        </header>
+            </header>
+        </div>
+   </div>
+
     </div>
 
 </turbo-frame>
