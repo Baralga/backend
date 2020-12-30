@@ -7,19 +7,16 @@
 </head>
 <body>
 
-<nav class="navbar is-dark" role="navigation" aria-label="main navigation" layout:fragment="navigation">
-    <div class="navbar-brand">
-        <a class="navbar-item is-primary" style="font-weight: bold; font-variant: small-caps;" th:href="@{/}">
-            Baralga
-        </a>
-    </div>
-</nav>
+<div layout:fragment="navigation"></div>
 
 <div layout:fragment="content" class="container">
     <div class="columns is-centered">
         <div class="column is-5-tablet is-4-desktop is-3-widescreen">
             <form method="POST" th:action="@{/login}" class="box has-background-light">
-                <h3 class="title is-3">Log in</h3>
+                <h3 class="title is-3">
+                    <img src="/static/baralga_48px.ec6b49d4.png" width="28" height="28">
+                    Log in
+                </h3>
 
                 <div th:if="${param.error}" class="notification is-danger">
                     Invalid username and password.

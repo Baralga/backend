@@ -4,6 +4,8 @@ import HelloController from "./controllers/hello_controller"
 import TrackerController from "./controllers/tracker_controller"
 import ActivityNewController from "./controllers/activity-new_controller"
 
+import baralga_48px from './baralga_48px.png';
+
 const application = Application.start();
 
 // register controllers
