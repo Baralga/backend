@@ -2,9 +2,6 @@ import { Controller } from "stimulus"
 import dayjs from "dayjs"
 
 export default class extends Controller {
-        static get targets() {
-          return [ "startTime", "endTime", "day" ]
-        }
 
         connect() {
             let now = dayjs();
