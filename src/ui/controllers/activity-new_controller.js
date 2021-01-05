@@ -3,6 +3,10 @@ import dayjs from "dayjs"
 
 export default class extends Controller {
 
+        static get targets() {
+          return [ "day", "startTime", "endTime" ]
+        }
+
         connect() {
             let now = dayjs();
 

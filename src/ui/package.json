@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "parcel build index.html",
     "copy": "copyfiles -f -e layout.html ./dist/*.* ../main/resources/static && copyfiles -f ./dist/layout.html ../main/resources/templates",
-    "build": "rimraf ../main/resources/static/style.* && rimraf ../main/resources/static/ui.* && rimraf ../main/resources/static/fa-.* && rimraf ./dist && parcel build layout.html --public-url /static && copyfiles -f -e ./dist/layout.html ./dist/*.* ../main/resources/static && copyfiles -f ./dist/layout.html ../main/resources/templates",
+    "build": "rimraf ../main/resources/static/style.* && rimraf ../main/resources/static/ui.* && rimraf ../main/resources/static/fa-.* && rimraf ./dist && parcel build layout.html --public-url /static --no-source-maps && copyfiles -f -e ./dist/layout.html ./dist/*.* ../main/resources/static && copyfiles -f ./dist/layout.html ../main/resources/templates",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
