@@ -2,6 +2,7 @@ import { Controller } from "stimulus"
 import dayjs from "dayjs"
 
 export default class extends Controller {
+
         static get targets() {
           return [ "name", "controlStart", "controlStop", "controlSwitchProject", "start", "duration" ]
         }
