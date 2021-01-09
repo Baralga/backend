@@ -1,7 +1,5 @@
 <turbo-frame id="b__activities_list" class="column is-12">
-    <script defer th:utext="'history.replaceState(null, null, \'' + ${session.filter.toUrlParams()} + '\')'"></script>
-
-    <div class="columns is-multiline">
+    <div class="columns is-multiline" data-controller="activity-filter-url" th:data-activity-filter-url-params-value="${session.filter.toUrlParams()}">
 
     <div class="column is-12">
         <nav class="level is-mobile" id="b__activities_filter">
