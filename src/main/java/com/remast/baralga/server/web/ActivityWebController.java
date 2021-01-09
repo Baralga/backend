@@ -102,12 +102,19 @@ public class ActivityWebController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/activities/new")
-    public ModelAndView createActivity(@Valid ActivityModel activityModel, Model model, HttpServletRequest request, BindingResult bindingResult, Principal principal) {
+    @PostMapping(value = "/activities/new", produces = "text/html; turbo-stream=*")
+    public ModelAndView createActivity(@Valid @ModelAttribute("activity") ActivityModel activityModel, BindingResult bindingResult, Model model, HttpServletRequest request, Principal principal) {
         activityModel.validateDates().stream().forEach(bindingResult::addError);
         if (bindingResult.hasErrors()) {
-            model.addAttribute("activity", activityModel);
-            return new ModelAndView("activityNew", HttpStatus.BAD_REQUEST); // NOSONAR
+            var projects = projectRepository.findAllByActive(true, PageRequest.of(0, 50));
+            model.addAttribute("projects", projects); // NOSONAR
+            model.addAttribute("enableActivityNewController", false);
+
+            model.addAttribute("template", "fragments/activityNewForm.html");
+            model.addAttribute("turboAction", "replace");
+            model.addAttribute("turboTarget", "b__activity_new");
+
+            return new ModelAndView("turbo/turbo.stream.html", HttpStatus.OK); // NOSONAR
         }
         activityService.create(activityModel.map(), principal);
 
@@ -138,14 +145,22 @@ public class ActivityWebController {
         return "activityEdit"; // NOSONAR
     }
 
-    @PostMapping("/activities/{id}")
-    public String updateActivity(@PathVariable final String id, @Valid ActivityModel activityModel, BindingResult bindingResult, HttpServletRequest request, Principal principal) {
+    @PostMapping(value = "/activities/{id}", produces = "text/html; turbo-stream=*")
+    public ModelAndView updateActivity(@PathVariable final String id, @Valid @ModelAttribute("activity") ActivityModel activityModel, BindingResult bindingResult, Model model, HttpServletRequest request, Principal principal) {
         activityModel.validateDates().stream().forEach(bindingResult::addError);
         if (bindingResult.hasErrors()) {
-            return "redirect:/activities/" + id; // NOSONAR
+            var projects = projectRepository.findAllByActive(true, PageRequest.of(0, 50));
+            model.addAttribute("projects", projects); // NOSONAR
+            model.addAttribute("enableActivityNewController", false);
+
+            model.addAttribute("template", "fragments/activityEditForm.html");
+            model.addAttribute("turboAction", "replace");
+            model.addAttribute("turboTarget", "b__activity_edit");
+
+            return new ModelAndView("turbo/turbo.stream.html", HttpStatus.OK); // NOSONAR
         }
         activityService.update(activityModel.map(), principal, request.isUserInRole("ROLE_ADMIN")); // NOSONAR
-        return "redirect:/"; // NOSONAR
+        return new ModelAndView("redirect:/"); // NOSONAR
     }
 
     @Transactional(readOnly = true)

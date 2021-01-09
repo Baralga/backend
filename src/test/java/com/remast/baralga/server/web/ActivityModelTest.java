@@ -3,6 +3,7 @@ package com.remast.baralga.server.web;
 import com.remast.baralga.server.Activity;
 import com.remast.baralga.server.Project;
 import org.junit.jupiter.api.Test;
+import org.springframework.validation.FieldError;
 
 import java.time.LocalDateTime;
 
@@ -100,7 +101,8 @@ class ActivityModelTest {
         assertThat(errors)
                 .isNotNull()
                 .hasSize(1);
-        assertThat(errors.get(0).getObjectName()).isEqualTo("day");
+        assertThat(errors.get(0).getObjectName()).isEqualTo("activity");
+        assertThat(((FieldError) errors.get(0)).getField()).isEqualTo("day");
     }
 
     @Test
@@ -117,7 +119,8 @@ class ActivityModelTest {
         assertThat(errors)
                 .isNotNull()
                 .hasSize(1);
-        assertThat(errors.get(0).getObjectName()).isEqualTo("startTime");
+        assertThat(errors.get(0).getObjectName()).isEqualTo("activity");
+        assertThat(((FieldError) errors.get(0)).getField()).isEqualTo("startTime");
     }
 
     @Test
@@ -134,7 +137,28 @@ class ActivityModelTest {
         assertThat(errors)
                 .isNotNull()
                 .hasSize(1);
-        assertThat(errors.get(0).getObjectName()).isEqualTo("endTime");
+        assertThat(errors.get(0).getObjectName()).isEqualTo("activity");
+        assertThat(((FieldError) errors.get(0)).getField()).isEqualTo("endTime");
+    }
+
+    @Test
+    void validateDateStartBeforeEndTime() {
+        // Arrange
+        var activityModel = ActivityModel.builder()
+                .day("01/10/2020")
+                .startTime("11:00")
+                .endTime("10:00")
+                .build();
+
+        // Act
+        var errors = activityModel.validateDates();
+
+        // Assert
+        assertThat(errors)
+                .isNotNull()
+                .hasSize(1);
+        assertThat(errors.get(0).getObjectName()).isEqualTo("activity");
+        assertThat(((FieldError) errors.get(0)).getField()).isEqualTo("startTime");
     }
 
 }

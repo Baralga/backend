@@ -6,9 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -28,18 +29,18 @@ public class ActivityModel {
 
     private String id;
 
-    @NotNull
+    @NotEmpty
     private String day;
 
-    @NotNull
+    @NotEmpty
     private String startTime;
 
-    @NotNull
+    @NotEmpty
     private String endTime;
 
     private String description;
 
-    @NotNull
+    @NotEmpty
     private String projectId;
 
     public ActivityModel(final Project project) {
@@ -57,12 +58,17 @@ public class ActivityModel {
 
     public List<ObjectError> validateDates() {
         var errors = new ArrayList<ObjectError>();
+        var dayValid = false;
+        var startTimeValid = false;
+        var endTimeValid = false;
 
         if (day != null) {
             try {
                 DATE_FORMAT.parse(day);
+                dayValid = true;
             } catch (DateTimeParseException e) {
-                errors.add(new ObjectError(
+                errors.add(new FieldError(
+                        "activity",
                         "day",
                         "Invalid day."
                 ));
@@ -72,8 +78,10 @@ public class ActivityModel {
         if (startTime != null) {
             try {
                 HOUR_FORMAT.parse(startTime);
+                startTimeValid = true;
             } catch (DateTimeParseException e) {
-                errors.add(new ObjectError(
+                errors.add(new FieldError(
+                        "activity",
                         "startTime",
                         "Invalid start time."
                 ));
@@ -83,10 +91,25 @@ public class ActivityModel {
         if (endTime != null) {
             try {
                 HOUR_FORMAT.parse(endTime);
+                endTimeValid = true;
             } catch (DateTimeParseException e) {
-                errors.add(new ObjectError(
+                errors.add(new FieldError(
+                        "activity",
                         "endTime",
                         "Invalid end time."
+                ));
+            }
+        }
+
+        if (dayValid && startTimeValid && endTimeValid) {
+            var start = LocalDateTime.parse(day + " " + startTime, DATE_HOUR_FORMAT);
+            var end = LocalDateTime.parse(day + " " + endTime, DATE_HOUR_FORMAT);
+
+            if (end.isBefore(start)) {
+                errors.add(new FieldError(
+                        "activity",
+                        "startTime",
+                        "Invalid start time."
                 ));
             }
         }
