@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.*;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -135,7 +135,7 @@ class End2EndWebITTest extends AbstractEnd2EndTest {
 
         // Assert
         resultActions.andExpect(status().isFound())
-                .andExpect(header().string("Location", "/?timespan=year&date=2020"));
+                .andExpect(header().stringValues("Location", hasItems(startsWith("/?"))));
     }
 
     @WithMockUser(value = "admin", authorities = "ROLE_ADMIN")
