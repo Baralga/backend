@@ -37,6 +37,12 @@ public class ActivityWebController {
     private final @NonNull ProjectRepository projectRepository;
 
     @Transactional(readOnly = true)
+    @GetMapping(value = "/activities", headers = "Accept=text/vnd.turbo-stream.html", produces = "text/vnd.turbo-stream.html")
+    public String showActivitiesStream(Model model, HttpServletRequest request, HttpServletResponse response, Principal principal) {
+        return showActivities(model, request, response, principal); // NOSONAR
+    }
+
+    @Transactional(readOnly = true)
     @GetMapping("/activities")
     public String showActivities(Model model, HttpServletRequest request, HttpServletResponse response, Principal principal) {
         var activitiesFilter = filterOf(request, principal);
@@ -102,19 +108,32 @@ public class ActivityWebController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping(value = "/activities/new", produces = "text/html; turbo-stream=*")
+    @PostMapping(value = "/activities/new", headers = "Accept=text/vnd.turbo-stream.html", produces = "text/vnd.turbo-stream.html")
+    public ModelAndView createActivityStream(@Valid @ModelAttribute("activity") ActivityModel activityModel, BindingResult bindingResult, Model model, HttpServletRequest request, Principal principal) {
+        return doCreateActivity(true, activityModel, bindingResult, model, request, principal);
+    }
+
+    @PostMapping("/activities/new")
     public ModelAndView createActivity(@Valid @ModelAttribute("activity") ActivityModel activityModel, BindingResult bindingResult, Model model, HttpServletRequest request, Principal principal) {
+        return doCreateActivity(false, activityModel, bindingResult, model, request, principal);
+    }
+
+    private ModelAndView doCreateActivity(boolean isTurboStreamRequest, ActivityModel activityModel, BindingResult bindingResult, Model model, HttpServletRequest request, Principal principal) {
         activityModel.validateDates().stream().forEach(bindingResult::addError);
         if (bindingResult.hasErrors()) {
             var projects = projectRepository.findAllByActive(true, PageRequest.of(0, 50));
             model.addAttribute("projects", projects); // NOSONAR
             model.addAttribute("enableActivityNewController", false);
 
-            model.addAttribute("template", "fragments/activityNewForm.html");
-            model.addAttribute("turboAction", "replace");
-            model.addAttribute("turboTarget", "b__activity_new");
+            if (isTurboStreamRequest) {
+                model.addAttribute("template", "fragments/activityNewForm.html");
+                model.addAttribute("turboAction", "replace");
+                model.addAttribute("turboTarget", "b__activity_new");
 
-            return new ModelAndView("turbo/turbo.stream.html", HttpStatus.OK); // NOSONAR
+                return new ModelAndView("turbo/turbo.stream.html", HttpStatus.UNPROCESSABLE_ENTITY); // NOSONAR
+            }
+
+            return new ModelAndView("activityNew");
         }
         activityService.create(activityModel.map(), principal);
 
