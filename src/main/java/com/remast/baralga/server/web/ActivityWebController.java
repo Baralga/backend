@@ -102,7 +102,7 @@ public class ActivityWebController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping(value = "/activities/new", produces = "text/html; turbo-stream=*")
+    @PostMapping(value = "/activities/new", produces = "text/vnd.turbo-stream.html")
     public ModelAndView createActivity(@Valid @ModelAttribute("activity") ActivityModel activityModel, BindingResult bindingResult, Model model, HttpServletRequest request, Principal principal) {
         activityModel.validateDates().stream().forEach(bindingResult::addError);
         if (bindingResult.hasErrors()) {
@@ -145,7 +145,7 @@ public class ActivityWebController {
         return "activityEdit"; // NOSONAR
     }
 
-    @PostMapping(value = "/activities/{id}", produces = "text/html; turbo-stream=*")
+    @PostMapping(value = "/activities/{id}", produces = "text/vnd.turbo-stream.html")
     public ModelAndView updateActivity(@PathVariable final String id, @Valid @ModelAttribute("activity") ActivityModel activityModel, BindingResult bindingResult, Model model, HttpServletRequest request, Principal principal) {
         activityModel.validateDates().stream().forEach(bindingResult::addError);
         if (bindingResult.hasErrors()) {

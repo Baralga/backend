@@ -88,7 +88,7 @@ public class ProjectWebController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PostMapping(value = "/projects", produces = "text/html; turbo-stream=*")
+    @PostMapping(value = "/projects", produces = "text/vnd.turbo-stream.html")
     public String createProject(@Valid @ModelAttribute("project") ProjectModel projectModel) {
         projectService.create(projectModel.map());
         return "redirect:/projects"; // NOSONAR
