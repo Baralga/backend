@@ -33,7 +33,7 @@ public class ProjectWebController {
     private final @NonNull ActivityRepository activityRepository;
 
     @Transactional(readOnly = true)
-    @GetMapping("/projects")
+    @GetMapping(value = "/projects", headers = "Accept=text/html", produces = "text/html")
     public String showProjects(Model model, HttpServletResponse response) {
         model.addAttribute("project", new ProjectModel());
         response.setHeader(HttpHeaders.CACHE_CONTROL,
@@ -45,7 +45,7 @@ public class ProjectWebController {
     }
 
     @Transactional(readOnly = true)
-    @GetMapping("/project_list")
+    @GetMapping(value = "/project_list", headers = "Accept=text/html", produces = "text/html")
     public String listProjects(Model model, @SortDefault(sort = "title", direction = Sort.Direction.ASC)  @PageableDefault(size = 50) Pageable pageable, HttpServletResponse response) {
         model.addAttribute("projects",projectRepository.findAll(pageable));
         response.setHeader(HttpHeaders.CACHE_CONTROL,
@@ -58,7 +58,7 @@ public class ProjectWebController {
 
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @GetMapping("/projects/{id}/delete")
+    @GetMapping(value = "/projects/{id}/delete", headers = "Accept=text/html", produces = "text/html")
     public String showDeleteProject(@PathVariable final String id, Model model, HttpServletResponse response) {
         var project =  projectRepository.findById(id);
         if (project.isEmpty()) {
@@ -76,7 +76,7 @@ public class ProjectWebController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PostMapping("/projects/{id}/delete")
+    @PostMapping(value = "/projects/{id}/delete", headers = "Accept=text/html", produces = "text/html")
     public String deleteProject(@PathVariable final String id) {
         var project =  projectRepository.findById(id);
         if (project.isEmpty()) {
@@ -88,7 +88,7 @@ public class ProjectWebController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PostMapping(value = "/projects", produces = "text/html; turbo-stream=*")
+    @PostMapping(value = "/projects", headers = "Accept=text/vnd.turbo-stream.html", produces = "text/vnd.turbo-stream.html")
     public String createProject(@Valid @ModelAttribute("project") ProjectModel projectModel) {
         projectService.create(projectModel.map());
         return "redirect:/projects"; // NOSONAR
