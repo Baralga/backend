@@ -37,13 +37,7 @@ public class ActivityWebController {
     private final @NonNull ProjectRepository projectRepository;
 
     @Transactional(readOnly = true)
-    @GetMapping(value = "/activities", headers = "Accept=text/vnd.turbo-stream.html", produces = "text/vnd.turbo-stream.html")
-    public String showActivitiesStream(Model model, HttpServletRequest request, HttpServletResponse response, Principal principal) {
-        return showActivities(model, request, response, principal); // NOSONAR
-    }
-
-    @Transactional(readOnly = true)
-    @GetMapping("/activities")
+    @GetMapping(value = "/activities", headers = "Accept=text/html", produces = "text/html")
     public String showActivities(Model model, HttpServletRequest request, HttpServletResponse response, Principal principal) {
         var activitiesFilter = filterOf(request, principal);
 
@@ -67,7 +61,7 @@ public class ActivityWebController {
     }
 
     @Transactional(readOnly = true)
-    @GetMapping("/")
+    @GetMapping(value = "/", headers = "Accept=text/html", produces = "text/html")
     public String showHome(Model model, HttpServletRequest request, HttpServletResponse response, Principal principal) {
         var activitiesFilter = filterOf(request, principal);
 
@@ -87,7 +81,7 @@ public class ActivityWebController {
     }
 
     @Transactional(readOnly = true)
-    @GetMapping("/activities/new")
+    @GetMapping(value = "/activities/new", headers = "Accept=text/html", produces = "text/html")
     public String newActivity(Model model, HttpServletResponse response) {
         var projects = projectRepository.findAllByActive(true, PageRequest.of(0, 50));
         model.addAttribute("projects", projects); // NOSONAR
@@ -103,7 +97,7 @@ public class ActivityWebController {
     }
 
     @Transactional(readOnly = true)
-    @GetMapping("/activities/ping")
+    @GetMapping(value = "/activities/ping", headers = "Accept=text/html", produces = "text/html")
     public ResponseEntity pingActivity() {
         return ResponseEntity.ok().build();
     }
@@ -113,9 +107,51 @@ public class ActivityWebController {
         return doCreateActivity(true, activityModel, bindingResult, model, request, principal);
     }
 
-    @PostMapping("/activities/new")
+    @PostMapping(value = "/activities/new", headers = "Accept=text/html", produces = "text/html")
     public ModelAndView createActivity(@Valid @ModelAttribute("activity") ActivityModel activityModel, BindingResult bindingResult, Model model, HttpServletRequest request, Principal principal) {
         return doCreateActivity(false, activityModel, bindingResult, model, request, principal);
+    }
+
+    @Transactional(readOnly = true)
+    @GetMapping(value = "/activities/{id}", headers = "Accept=text/html", produces = "text/html")
+    public String editActivity(@PathVariable final String id, Model model, HttpServletRequest request, Principal principal) {
+        var activity = activityRepository.findById(id);
+
+        if (activity.isEmpty()) {
+            return "redirect:/"; // NOSONAR
+        }
+
+        var isAdmin = request.isUserInRole("ROLE_ADMIN"); // NOSONAR
+        if (!isAdmin && !activity.get().getUser().equals(principal.getName())) {
+            return "redirect:/"; // NOSONAR
+        }
+        model.addAttribute("projects", projectRepository.findAllByActive(true, PageRequest.of(0, 50)));
+        model.addAttribute("activity", new ActivityModel(activity.get()));
+        return "activityEdit"; // NOSONAR
+    }
+
+    @PostMapping(value = "/activities/{id}", headers = "Accept=text/vnd.turbo-stream.html", produces = "text/vnd.turbo-stream.html")
+    public ModelAndView updateActivity(@PathVariable final String id, @Valid @ModelAttribute("activity") ActivityModel activityModel, BindingResult bindingResult, Model model, HttpServletRequest request, Principal principal) {
+        activityModel.validateDates().stream().forEach(bindingResult::addError);
+        if (bindingResult.hasErrors()) {
+            var projects = projectRepository.findAllByActive(true, PageRequest.of(0, 50));
+            model.addAttribute("projects", projects); // NOSONAR
+            model.addAttribute("enableActivityNewController", false);
+
+            model.addAttribute("template", "fragments/activityEditForm.html");
+            model.addAttribute("turboAction", "replace");
+            model.addAttribute("turboTarget", "b__activity_edit");
+
+            return new ModelAndView("turbo/turbo.stream.html", HttpStatus.OK); // NOSONAR
+        }
+        activityService.update(activityModel.map(), principal, request.isUserInRole("ROLE_ADMIN")); // NOSONAR
+        return new ModelAndView("redirect:/"); // NOSONAR
+    }
+
+    @Transactional(readOnly = true)
+    @PostMapping(path = "/activities/{id}", params = "cancel", headers = "Accept=text/html", produces = "text/html")
+    public String updateActivityCancel(@PathVariable final String id) {
+        return "redirect:/"; // NOSONAR
     }
 
     private ModelAndView doCreateActivity(boolean isTurboStreamRequest, ActivityModel activityModel, BindingResult bindingResult, Model model, HttpServletRequest request, Principal principal) {
@@ -144,48 +180,6 @@ public class ActivityWebController {
         }
 
         return new ModelAndView("redirect:/" + activitiesFilter.toUrlParams()); // NOSONAR
-    }
-
-    @Transactional(readOnly = true)
-    @GetMapping("/activities/{id}")
-    public String editActivity(@PathVariable final String id, Model model, HttpServletRequest request, Principal principal) {
-        var activity = activityRepository.findById(id);
-
-        if (activity.isEmpty()) {
-            return "redirect:/"; // NOSONAR
-        }
-
-        var isAdmin = request.isUserInRole("ROLE_ADMIN"); // NOSONAR
-        if (!isAdmin && !activity.get().getUser().equals(principal.getName())) {
-            return "redirect:/"; // NOSONAR
-        }
-        model.addAttribute("projects", projectRepository.findAllByActive(true, PageRequest.of(0, 50)));
-        model.addAttribute("activity", new ActivityModel(activity.get()));
-        return "activityEdit"; // NOSONAR
-    }
-
-    @PostMapping(value = "/activities/{id}", produces = "text/html; turbo-stream=*")
-    public ModelAndView updateActivity(@PathVariable final String id, @Valid @ModelAttribute("activity") ActivityModel activityModel, BindingResult bindingResult, Model model, HttpServletRequest request, Principal principal) {
-        activityModel.validateDates().stream().forEach(bindingResult::addError);
-        if (bindingResult.hasErrors()) {
-            var projects = projectRepository.findAllByActive(true, PageRequest.of(0, 50));
-            model.addAttribute("projects", projects); // NOSONAR
-            model.addAttribute("enableActivityNewController", false);
-
-            model.addAttribute("template", "fragments/activityEditForm.html");
-            model.addAttribute("turboAction", "replace");
-            model.addAttribute("turboTarget", "b__activity_edit");
-
-            return new ModelAndView("turbo/turbo.stream.html", HttpStatus.OK); // NOSONAR
-        }
-        activityService.update(activityModel.map(), principal, request.isUserInRole("ROLE_ADMIN")); // NOSONAR
-        return new ModelAndView("redirect:/"); // NOSONAR
-    }
-
-    @Transactional(readOnly = true)
-    @PostMapping(path = "/activities/{id}", params = "cancel")
-    public String updateActivityCancel(@PathVariable final String id) {
-        return "redirect:/"; // NOSONAR
     }
 
     private ActivitiesFilterWeb filterOf(HttpServletRequest request, Principal principal) {
