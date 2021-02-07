@@ -13,7 +13,7 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class LoginWebController {
 
-    @GetMapping("/login")
+    @GetMapping(value = "/login", headers = "Accept=text/html", produces = "text/html")
     public String login(HttpServletResponse response) {
         response.setHeader(HttpHeaders.CACHE_CONTROL,
                 CacheControl.maxAge(Duration.ofSeconds(0))
