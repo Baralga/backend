@@ -44,7 +44,7 @@ public class ProjectRestController {
         if (project.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(new ProjectRepresentation(project.get(), request.isUserInRole("ROLE_ADMIN"))); // NOSONAR
+        return ResponseEntity.ok(new ProjectRepresentation(project.get(), isAdmin(request))); // NOSONAR
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -63,7 +63,7 @@ public class ProjectRestController {
     @GetMapping
     public PagedModel<ProjectRepresentation> get(@RequestParam(required = false) Boolean active, HttpServletRequest request, @SortDefault(sort = "title",
             direction = Sort.Direction.ASC) Pageable pageable) {
-        var isAdmin = request.isUserInRole("ROLE_ADMIN"); // NOSONAR
+        var isAdmin = isAdmin(request);
 
         Page<Project> projects;
         if (active != null) {
@@ -94,7 +94,7 @@ public class ProjectRestController {
                 .path("/{id}")
                 .buildAndExpand(project.getId())
                 .toUri();
-        var projectRepresentation = new ProjectRepresentation(project, request.isUserInRole("ROLE_ADMIN")); // NOSONAR
+        var projectRepresentation = new ProjectRepresentation(project, isAdmin(request)); // NOSONAR
         return ResponseEntity.created(href).body(projectRepresentation);
     }
 
@@ -109,9 +109,13 @@ public class ProjectRestController {
 
         var projectRepresentation = new ProjectRepresentation(
                 projectRepository.save(project.map()),
-                request.isUserInRole("ROLE_ADMIN") // NOSONAR
+                isAdmin(request)
         );
         return ResponseEntity.ok().body(projectRepresentation);
+    }
+
+    private boolean isAdmin(HttpServletRequest request) {
+        return request.isUserInRole("ROLE_ADMIN");
     }
 
 }
