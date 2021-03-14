@@ -28,21 +28,21 @@
                         <div class="button">
                             <a th:href="@{'/activities' + ${previousFilter.toUrlParams()}}"
                                class="icon is-medium">
-                                <i class="fa fa-angle-left" th:value="${currentFilter.toUrlParams()}"></i>
+                                <i class="fa fa-angle-left" aria-hidden="true" th:value="${currentFilter.toUrlParams()}"></i>
                             </a>
                         </div>
 
                         <div class="button">
                             <a th:href="@{/activities(timespan=${#strings.toLowerCase(currentFilter.timespan)})}"
                                class="icon is-medium">
-                                <i class="fa fa-home"></i>
+                                <i class="fa fa-home" aria-hidden="true"></i>
                             </a>
                         </div>
 
                         <div class="button">
                             <a th:href="@{'/activities' + ${nextFilter.toUrlParams()}}"
                                class="icon is-medium">
-                                <i class="fa fa-angle-right"></i>
+                                <i class="fa fa-angle-right" aria-hidden="true"></i>
                             </a>
                         </div>
                     </div>
