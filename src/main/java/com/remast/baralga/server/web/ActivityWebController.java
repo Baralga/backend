@@ -24,6 +24,7 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.time.Duration;
 import java.util.stream.Collectors;
+import static com.remast.baralga.server.web.TurboHelper.isReferedFromLogin;
 
 @Transactional
 @Controller
@@ -39,6 +40,9 @@ public class ActivityWebController {
     @Transactional(readOnly = true)
     @GetMapping(value = "/activities", headers = "Accept=text/html", produces = "text/html")
     public String showActivities(Model model, HttpServletRequest request, HttpServletResponse response, Principal principal) {
+        if (isReferedFromLogin(request)) {
+            return "redirect:/";
+        }
         var activitiesFilter = filterOf(request, principal);
 
         model.addAttribute("currentFilter", activitiesFilter);

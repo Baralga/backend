@@ -17,9 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.time.Duration;
+import static com.remast.baralga.server.web.TurboHelper.isReferedFromLogin;
 
 @Transactional
 @Controller
@@ -46,7 +48,11 @@ public class ProjectWebController {
 
     @Transactional(readOnly = true)
     @GetMapping(value = "/project_list", headers = "Accept=text/html", produces = "text/html")
-    public String listProjects(Model model, @SortDefault(sort = "title", direction = Sort.Direction.ASC)  @PageableDefault(size = 50) Pageable pageable, HttpServletResponse response) {
+    public String listProjects(Model model, @SortDefault(sort = "title", direction = Sort.Direction.ASC)  @PageableDefault(size = 50) Pageable pageable, HttpServletRequest request, HttpServletResponse response) {
+        if (isReferedFromLogin(request)) {
+            return "redirect:/projects";
+        }
+
         model.addAttribute("projects",projectRepository.findAll(pageable));
         response.setHeader(HttpHeaders.CACHE_CONTROL,
                 CacheControl.maxAge(Duration.ofSeconds(0))
