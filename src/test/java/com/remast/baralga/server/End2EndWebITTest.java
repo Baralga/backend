@@ -86,6 +86,18 @@ class End2EndWebITTest extends AbstractEnd2EndTest {
 
     @WithMockUser(value = "admin", authorities = "ROLE_ADMIN")
     @Test
+    void showNewActivity() throws Exception {
+        // Arrange
+
+        // Act
+        var resultActions = mockMvc.perform(get("/activities/new"));
+
+        // Assert
+        resultActions.andExpect(status().isOk());
+    }
+
+    @WithMockUser(value = "admin", authorities = "ROLE_ADMIN")
+    @Test
     void showDeleteProject() throws Exception {
         // Arrange
         var projectId = INITIAL_PROJECT_ID;
