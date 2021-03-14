@@ -102,7 +102,7 @@ public class ActivityWebController {
 
     @Transactional(readOnly = true)
     @GetMapping(value = "/activities/ping", headers = "Accept=text/html", produces = "text/html")
-    public ResponseEntity pingActivity() {
+    public ResponseEntity<Void> pingActivity() {
         return ResponseEntity.ok().build();
     }
 
