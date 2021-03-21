@@ -85,7 +85,7 @@ public abstract class AbstractEnd2EndTest {
         return executeRequest(method, path, jsonBody, Role.Admin);
     }
 
-        protected ResponseEntity<JsonNode> executeRequest(HttpMethod method, String path, ObjectNode jsonBody, Role role) {
+    protected ResponseEntity<JsonNode> executeRequest(HttpMethod method, String path, ObjectNode jsonBody, Role role) {
         try {
             var headers = new LinkedMultiValueMap<String, String>();
             headers.add("Content-Type", "application/json");
