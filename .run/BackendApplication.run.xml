@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="BackendApplication" type="Application" factoryName="Application" nameIsGenerated="true">
-    <option name="MAIN_CLASS_NAME" value="com.remast.baralga.server.BackendApplication" />
+  <configuration default="false" name="BaralgaApplication" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.baralga.BaralgaApplication" />
     <module name="backend" />
     <method v="2">
       <option name="Make" enabled="true" />
