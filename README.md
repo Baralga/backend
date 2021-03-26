@@ -2,7 +2,7 @@
 
 # Baralga Backend
 
-Backend for multi user usage of the Baralga time tracking application.
+Backend for multi account usage of the Baralga time tracking application.
 
 ## Administration
 
@@ -13,7 +13,7 @@ least Java version 13 but newer ones should work too.
 
 ### Accessing the Web User Interface
 
-The web user interface is available at `http://localhost:8080/`. You can log in as administrator with `admin/adm1n` or as user with `user1/us3r`.
+The web account interface is available at `http://localhost:8080/`. You can log in as administrator with `admin/adm1n` or as account with `user1/us3r`.
 
 ### Configuration
 
@@ -22,7 +22,7 @@ The backend is configured using the following environment variables:
 | Environment Variable  | Default Value                        | Description  |
 | --------------------- |:------------------------------------| :--------|
 | `BARALGA_DS_URL`      | `jdbc:mysql://localhost:3306/baralga`| JDBC Connection String for database |
-| `BARALGA_DS_USER`     | `root`                       |   database user |
+| `BARALGA_DS_USER`     | `root`                       |   database account |
 | `BARALGA_DS_PASSWORD` | `mysql`      |    database password |
 | `SERVER_PORT` | `8080`      |    http server port |
 
@@ -38,7 +38,7 @@ Baralga supports the following roles:
 
 #### Administration
 
-Users are stored in the database in the table `users` and the user role in the table `authorities`.  Users can be 
+Users are stored in the database in the table `users` and the account role in the table `authorities`.  Users can be 
 created using the following sql statements.
 
 ```mysql-sql

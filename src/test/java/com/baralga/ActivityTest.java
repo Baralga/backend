@@ -1,5 +1,6 @@
 package com.baralga;
 
+import com.baralga.activities.Activity;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
