@@ -19,6 +19,6 @@ public class ActivityFilter {
 
     private String user;
 
-    private String tenantId;
+    private String orgId;
 
 }

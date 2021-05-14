@@ -114,12 +114,12 @@ public class ActivitiesFilterWeb implements Serializable {
                 .build();
     }
 
-    public ActivityFilter map(String tenantId) {
+    public ActivityFilter map(String orgId) {
         return ActivityFilter.builder()
                 .start(start)
                 .end(end)
                 .user(user)
-                .tenantId(tenantId)
+                .orgId(orgId)
                 .build();
     }
 

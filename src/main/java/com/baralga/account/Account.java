@@ -19,8 +19,8 @@ public class Account {
     @Column("username")
     private String username;
 
-    @Column("tenant_id")
-    private String tenantId;
+    @Column("org_id")
+    private String orgId;
 
     @Column("password")
     private String password;

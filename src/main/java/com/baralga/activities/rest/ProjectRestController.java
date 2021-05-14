@@ -69,9 +69,9 @@ public class ProjectRestController {
 
         Page<Project> projects;
         if (active != null) {
-            projects = projectService.findAllByTenantIdAndActive(user.getTenantId(), active, pageable);
+            projects = projectService.findAllByOrgIdAndActive(user.getOrgId(), active, pageable);
         } else {
-            projects = projectService.findAllByTenantId(user.getTenantId(), pageable);
+            projects = projectService.findAllByOrgId(user.getOrgId(), pageable);
         }
 
         var pageModel = PagedModel.of(

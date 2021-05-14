@@ -33,10 +33,10 @@ public class ProjectModel {
         active = project.getActive();
     }
 
-    public Project map(String tenantId) {
+    public Project map(String orgId) {
         return Project.builder()
                 .id(id)
-                .tenantId(tenantId)
+                .orgId(orgId)
                 .title(title)
                 .description(description)
                 .active(active)

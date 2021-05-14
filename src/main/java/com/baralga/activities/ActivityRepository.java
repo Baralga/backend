@@ -8,17 +8,17 @@ import java.util.Date;
 
 public interface ActivityRepository extends CrudRepository<Activity, String> {
 
-    Iterable<Activity> findByTenantIdAndUserOrderByStart(String tenantId, String user);
+    Iterable<Activity> findByOrgIdAndUserOrderByStart(String orgId, String user);
 
-    Iterable<Activity> findByTenantIdOrderByStart(String tenantId);
+    Iterable<Activity> findByOrgIdOrderByStart(String orgId);
 
-    @Query("SELECT * FROM activity WHERE tenant_id : tenantId and :username = username and :start <= start_time and start_time < :end order by start_time desc")
-    Iterable<Activity> findByTenantIdAndUserAndIntervalOrderByStart(String tenantId, String username, Date start, Date end);
+    @Query("SELECT * FROM activity WHERE org_id : orgId and :username = username and :start <= start_time and start_time < :end order by start_time desc")
+    Iterable<Activity> findByOrgIdAndUserAndIntervalOrderByStart(String orgId, String username, Date start, Date end);
 
-    @Query("SELECT * FROM activity WHERE tenant_id : tenantId and :start <= start_time and start_time < :end order by start_time desc")
-    Iterable<Activity> findByTenantIdAndIntervalOrderByStart(String tenantId, Date start, Date end);
+    @Query("SELECT * FROM activity WHERE org_id : orgId and :start <= start_time and start_time < :end order by start_time desc")
+    Iterable<Activity> findByOrgIdAndIntervalOrderByStart(String orgId, Date start, Date end);
 
-    Long countAllByTenantIdAndProjectId(String tenantId, String projectId);
+    Long countAllByOrgIdAndProjectId(String orgId, String projectId);
 
     @Modifying
     @Query("DELETE FROM activity WHERE :projectId = project_id")

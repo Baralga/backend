@@ -26,8 +26,8 @@ public class Activity {
     @Column("activity_id")
     private String id;
 
-    @Column("tenant_id")
-    private String tenantId;
+    @Column("org_id")
+    private String orgId;
 
     @Column("username")
     private String user;

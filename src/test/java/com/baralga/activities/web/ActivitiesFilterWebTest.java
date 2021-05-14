@@ -55,14 +55,14 @@ class ActivitiesFilterWebTest {
     @Test
     void map() {
         // Arrange
-        var tenantId = "tenant-123";
+        var orgId = "org-123";
         var activitiesFilterWeb = new ActivitiesFilterWeb();
         activitiesFilterWeb.setEnd(LocalDateTime.now());
         activitiesFilterWeb.setEnd(LocalDateTime.now().plusHours(1));
         activitiesFilterWeb.setUser("user");
 
         // Act
-        var activitiesFilter = activitiesFilterWeb.map(tenantId);
+        var activitiesFilter = activitiesFilterWeb.map(orgId);
 
         // Assert
         assertThat(activitiesFilterWeb.getStart()).isEqualTo(activitiesFilter.getStart());

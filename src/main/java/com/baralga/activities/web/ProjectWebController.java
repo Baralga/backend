@@ -56,7 +56,7 @@ public class ProjectWebController {
             return "redirect:/projects";
         }
 
-        model.addAttribute("projects", projectService.findAllByTenantId(user.getTenantId(), pageable));
+        model.addAttribute("projects", projectService.findAllByOrgId(user.getOrgId(), pageable));
         response.setHeader(HttpHeaders.CACHE_CONTROL,
                 CacheControl.maxAge(Duration.ofSeconds(0))
                         .cachePrivate()
@@ -69,13 +69,13 @@ public class ProjectWebController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/projects/{id}/delete", headers = "Accept=text/html", produces = "text/html")
     public String showDeleteProject(@PathVariable final String id, Model model, HttpServletResponse response, @LoggedIn User user) {
-        var project =  projectRepository.findByTenantIdAndId(user.getTenantId(), id);
+        var project =  projectRepository.findByOrgIdAndId(user.getOrgId(), id);
         if (project.isEmpty()) {
             return "redirect:/projects"; // NOSONAR
         }
         model.addAttribute("project", project.get());
-        model.addAttribute("dependingActivitiesCount", activityRepository.countAllByTenantIdAndProjectId(
-                user.getTenantId(),
+        model.addAttribute("dependingActivitiesCount", activityRepository.countAllByOrgIdAndProjectId(
+                user.getOrgId(),
                 project.get().getId())
         );
 
@@ -90,7 +90,7 @@ public class ProjectWebController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = "/projects/{id}/delete", headers = "Accept=text/html", produces = "text/html")
     public String deleteProject(@PathVariable final String id, @LoggedIn User user) {
-        var project =  projectRepository.findByTenantIdAndId(user.getTenantId(), id);
+        var project =  projectRepository.findByOrgIdAndId(user.getOrgId(), id);
         if (project.isEmpty()) {
             return "redirect:/projects"; // NOSONAR
         }
@@ -102,7 +102,7 @@ public class ProjectWebController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = "/projects", headers = "Accept=text/vnd.turbo-stream.html", produces = "text/vnd.turbo-stream.html")
     public String createProject(@Valid @ModelAttribute("project") ProjectModel projectModel, @LoggedIn User user) {
-        var project = projectModel.map(user.getTenantId());
+        var project = projectModel.map(user.getOrgId());
         projectService.create(project);
         return "redirect:/projects"; // NOSONAR
     }
