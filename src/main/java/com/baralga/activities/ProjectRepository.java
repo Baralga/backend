@@ -8,14 +8,14 @@ import java.util.Optional;
 
 public interface ProjectRepository extends PagingAndSortingRepository<Project, String> {
 
-    Optional<Project> findByTenantIdAndId(String tenantId, String id);
+    Optional<Project> findByOrgIdAndId(String orgId, String id);
 
-    List<Project> findAllByTenantId(String tenantId, Pageable pageable);
+    List<Project> findAllByOrgId(String orgId, Pageable pageable);
 
-    Long countAllByTenantId(String tenantId);
+    Long countAllByOrgId(String orgId);
 
-    List<Project> findAllByTenantIdAndActive(String tenantId, Boolean active, Pageable pageable);
+    List<Project> findAllByOrgIdAndActive(String orgId, Boolean active, Pageable pageable);
 
-    Long countAllByTenantIdAndActive(String tenantId, Boolean active);
+    Long countAllByOrgIdAndActive(String orgId, Boolean active);
 
 }

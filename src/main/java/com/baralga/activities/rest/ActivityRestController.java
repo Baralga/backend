@@ -60,7 +60,7 @@ public class ActivityRestController {
                 .start(start)
                 .end(end)
                 .user(user.getUsername())
-                .tenantId(user.getTenantId())
+                .orgId(user.getOrgId())
                 .build();
 
         var activities = activityService.read(activitiesFilter);

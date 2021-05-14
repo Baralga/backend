@@ -29,7 +29,7 @@ class ProjectModelTest {
     @Test
     void map() {
         // Arrange
-        var tenantId = "tenant-123";
+        var orgId = "org-123";
         var projectModel = new ProjectModel();
         projectModel.setActive(true);
         projectModel.setDescription("Description");
@@ -37,7 +37,7 @@ class ProjectModelTest {
         projectModel.setId("Id");
 
         // Act
-        var project = projectModel.map(tenantId);
+        var project = projectModel.map(orgId);
 
         // Assert
         assertThat(projectModel.getActive()).isEqualTo(project.getActive());
