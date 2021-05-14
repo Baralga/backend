@@ -51,7 +51,7 @@ public class ActivityWebController {
         model.addAttribute("previousFilter", activitiesFilter.previous());
         model.addAttribute("nextFilter", activitiesFilter.next());
 
-        var activities = activityService.read(activitiesFilter.map(user.getTenantId()));
+        var activities = activityService.read(activitiesFilter.map(user.getOrgId()));
         model.addAttribute("activities", activities.getActivities());
         model.addAttribute("projectsById", activities.getProjects().stream() // NOSONAR
                 .collect(Collectors.toMap(Project::getId, p -> p)));
@@ -73,7 +73,7 @@ public class ActivityWebController {
 
         model.addAttribute("currentFilter", activitiesFilter);
 
-        var projects = projectRepository.findAllByTenantIdAndActive(user.getTenantId(), true, PageRequest.of(0, 50));
+        var projects = projectRepository.findAllByOrgIdAndActive(user.getOrgId(), true, PageRequest.of(0, 50));
         model.addAttribute("projects", projects); // NOSONAR
         model.addAttribute("activity", new ActivityModel(projects.get(0)));
 
@@ -89,7 +89,7 @@ public class ActivityWebController {
     @Transactional(readOnly = true)
     @GetMapping(value = "/activities/new", headers = "Accept=text/html", produces = "text/html")
     public String newActivity(Model model, HttpServletResponse response, @LoggedIn User user) {
-        var projects = projectRepository.findAllByTenantIdAndActive(user.getTenantId(), true, PageRequest.of(0, 50));
+        var projects = projectRepository.findAllByOrgIdAndActive(user.getOrgId(), true, PageRequest.of(0, 50));
         model.addAttribute("projects", projects); // NOSONAR
         model.addAttribute("activity", new ActivityModel(projects.get(0)));
 
@@ -131,7 +131,7 @@ public class ActivityWebController {
         if (!isAdmin && !activity.get().getUser().equals(user.getUsername())) {
             return "redirect:/"; // NOSONAR
         }
-        model.addAttribute("projects", projectRepository.findAllByTenantIdAndActive(user.getTenantId(), true, PageRequest.of(0, 50)));
+        model.addAttribute("projects", projectRepository.findAllByOrgIdAndActive(user.getOrgId(), true, PageRequest.of(0, 50)));
         model.addAttribute("activity", new ActivityModel(activity.get()));
         return "activityEdit"; // NOSONAR
     }
@@ -140,7 +140,7 @@ public class ActivityWebController {
     public ModelAndView updateActivity(@PathVariable final String id, @Valid @ModelAttribute("activity") ActivityModel activityModel, BindingResult bindingResult, Model model, HttpServletRequest request, @LoggedIn User user) {
         activityModel.validateDates().stream().forEach(bindingResult::addError);
         if (bindingResult.hasErrors()) {
-            var projects = projectRepository.findAllByTenantIdAndActive(user.getTenantId(), true, PageRequest.of(0, 50));
+            var projects = projectRepository.findAllByOrgIdAndActive(user.getOrgId(), true, PageRequest.of(0, 50));
             model.addAttribute("projects", projects); // NOSONAR
             model.addAttribute("enableActivityNewController", false);
 
@@ -160,10 +160,10 @@ public class ActivityWebController {
         return "redirect:/"; // NOSONAR
     }
 
-    private ModelAndView doCreateActivity(boolean isTurboStreamRequest, ActivityModel activityModel, BindingResult bindingResult, Model model, HttpServletRequest request, @LoggedIn User user) {
+    private ModelAndView doCreateActivity(boolean isTurboStreamRequest, ActivityModel activityModel, BindingResult bindingResult, Model model, HttpServletRequest request, User user) {
         activityModel.validateDates().stream().forEach(bindingResult::addError);
         if (bindingResult.hasErrors()) {
-            var projects = projectRepository.findAllByTenantIdAndActive(user.getTenantId(), true, PageRequest.of(0, 50));
+            var projects = projectRepository.findAllByOrgIdAndActive(user.getOrgId(), true, PageRequest.of(0, 50));
             model.addAttribute("projects", projects); // NOSONAR
             model.addAttribute("enableActivityNewController", false);
 

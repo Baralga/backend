@@ -24,15 +24,15 @@ public class ProjectService {
         return project;
     }
 
-    public Page<Project> findAllByTenantId(String tenantId, Pageable pageable) {
-        var projects = projectRepository.findAllByTenantId(tenantId, pageable);
-        var totalCount = projectRepository.countAllByTenantId(tenantId);
+    public Page<Project> findAllByOrgId(String orgId, Pageable pageable) {
+        var projects = projectRepository.findAllByOrgId(orgId, pageable);
+        var totalCount = projectRepository.countAllByOrgId(orgId);
         return PageableExecutionUtils.getPage(projects, pageable, () -> totalCount);
     }
 
-    public Page<Project> findAllByTenantIdAndActive(String tenantId, Boolean active, Pageable pageable) {
-        var projects = projectRepository.findAllByTenantIdAndActive(tenantId, active, pageable);
-        var totalCount = projectRepository.countAllByTenantIdAndActive(tenantId, active);
+    public Page<Project> findAllByOrgIdAndActive(String orgId, Boolean active, Pageable pageable) {
+        var projects = projectRepository.findAllByOrgIdAndActive(orgId, active, pageable);
+        var totalCount = projectRepository.countAllByOrgIdAndActive(orgId, active);
         return PageableExecutionUtils.getPage(projects, pageable, () -> totalCount);
     }
 

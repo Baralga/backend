@@ -1,4 +1,4 @@
-package com.baralga.activities;
+package com.baralga.account;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,23 +12,17 @@ import org.springframework.data.relational.core.mapping.Table;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table("project")
-public class Project {
+@Table("organizations")
+public class Organization {
 
     @Id
-    @Column("project_id")
-    private String id;
-
     @Column("org_id")
-    private String orgId;
+    private String id;
 
     @Column("title")
     private String title;
 
     @Column("description")
     private String description;
-
-    @Column("active")
-    private Boolean active;
 
 }

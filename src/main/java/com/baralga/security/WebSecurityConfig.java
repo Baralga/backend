@@ -51,6 +51,7 @@ public class WebSecurityConfig {
                     .antMatchers("/webjars/**").permitAll()
                     .antMatchers("/actuator/**").permitAll()
                     .antMatchers("/static/**").permitAll()
+                    .antMatchers("/signup/**").permitAll()
                     .anyRequest().authenticated().and()
                     .formLogin().loginPage("/login").permitAll();
         }

@@ -64,18 +64,18 @@ public class ActivityService {
             var endDate = convertToDateViaInstant(activityFilter.getEnd());
 
             if (activityFilter.getUser() != null) {
-                activityRepository.findByTenantIdAndUserAndIntervalOrderByStart(activityFilter.getTenantId(), activityFilter.getUser(), startDate, endDate)
+                activityRepository.findByOrgIdAndUserAndIntervalOrderByStart(activityFilter.getOrgId(), activityFilter.getUser(), startDate, endDate)
                         .forEach(activities::add);
             } else {
-                activityRepository.findByTenantIdAndIntervalOrderByStart(activityFilter.getTenantId(), startDate, endDate)
+                activityRepository.findByOrgIdAndIntervalOrderByStart(activityFilter.getOrgId(), startDate, endDate)
                         .forEach(activities::add);
             }
         } else {
             if (activityFilter.getUser() != null) {
-                activityRepository.findByTenantIdAndUserOrderByStart(activityFilter.getTenantId(), activityFilter.getUser())
+                activityRepository.findByOrgIdAndUserOrderByStart(activityFilter.getOrgId(), activityFilter.getUser())
                         .forEach(activities::add);
             } else {
-                activityRepository.findByTenantIdOrderByStart(activityFilter.getTenantId())
+                activityRepository.findByOrgIdOrderByStart(activityFilter.getOrgId())
                         .forEach(activities::add);
             }
         }
