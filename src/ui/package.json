@@ -14,11 +14,11 @@
   "license": "ISC",
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.15.2",
-    "@hotwired/turbo": "^7.0.0-beta.4",
-    "bulma": "^0.9.1",
+    "@hotwired/turbo": "^7.0.0-beta.8",
+    "bulma": "^0.9.3",
     "copyfiles": "^2.4.1",
     "cssnano": "^4.1.10",
-    "dayjs": "^1.10.3",
+    "dayjs": "^1.10.6",
     "rimraf": "^3.0.2",
     "sass": "^1.32.4",
     "stimulus": "^2.0.0"
