@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.5.4</version>
+		<version>2.5.6</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.remast.baralga</groupId>
@@ -16,7 +16,7 @@
 
 	<properties>
 		<java.version>11</java.version>
-		<testcontainers.version>1.16.0</testcontainers.version>
+		<testcontainers.version>1.16.2</testcontainers.version>
 		<sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
 		<sonar.sources>src/main/java,src/main/resources</sonar.sources>
 	</properties>
