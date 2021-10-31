@@ -1,5 +1,11 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="BaralgaApplication" type="Application" factoryName="Application">
+  <configuration default="false" name="BaralgaApplication _ PostgreSQL" type="Application" factoryName="Application">
+    <option name="ALTERNATIVE_JRE_PATH" value="temurin-11" />
+    <envs>
+      <env name="BARALGA_DS_USER" value="postgres" />
+      <env name="BARALGA_DS_PASSWORD" value="postgres" />
+      <env name="BARALGA_DS_URL" value="jdbc:postgresql://localhost:5432/baralga" />
+    </envs>
     <option name="MAIN_CLASS_NAME" value="com.baralga.BaralgaApplication" />
     <module name="backend" />
     <method v="2">
