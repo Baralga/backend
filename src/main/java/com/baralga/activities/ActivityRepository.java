@@ -12,10 +12,10 @@ public interface ActivityRepository extends CrudRepository<Activity, String> {
 
     Iterable<Activity> findByOrgIdOrderByStart(String orgId);
 
-    @Query("SELECT * FROM activity WHERE org_id : orgId and :username = username and :start <= start_time and start_time < :end order by start_time desc")
+    @Query("SELECT * FROM activity WHERE org_id = :orgId and :username = username and :start <= start_time and start_time < :end order by start_time desc")
     Iterable<Activity> findByOrgIdAndUserAndIntervalOrderByStart(String orgId, String username, Date start, Date end);
 
-    @Query("SELECT * FROM activity WHERE org_id : orgId and :start <= start_time and start_time < :end order by start_time desc")
+    @Query("SELECT * FROM activity WHERE org_id = :orgId and :start <= start_time and start_time < :end order by start_time desc")
     Iterable<Activity> findByOrgIdAndIntervalOrderByStart(String orgId, Date start, Date end);
 
     Long countAllByOrgIdAndProjectId(String orgId, String projectId);

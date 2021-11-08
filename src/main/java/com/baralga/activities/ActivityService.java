@@ -26,6 +26,7 @@ public class ActivityService {
     public Activity create(final Activity activity, final User user) {
         activity.setUser(user.getUsername());
         activity.setId(UUID.randomUUID().toString());
+        activity.setOrgId(user.getOrgId());
         jdbcAggregateTemplate.insert(activity);
         return activity;
     }
